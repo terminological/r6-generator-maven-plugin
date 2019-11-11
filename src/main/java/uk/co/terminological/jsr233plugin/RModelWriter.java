@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +21,12 @@ public class RModelWriter {
 	private Configuration cfg;
 	private RModel model;
 	private File target;
-	private Path pathToJar;
+	private String jarFileName;
 
-	public RModelWriter(RModel model, File target, Path path) {
+	public RModelWriter(RModel model, File target, String jarFileName) {
 		this.model = model;
 		this.target = target;
-		this.pathToJar = path;
+		this.jarFileName = jarFileName;
 	}
 
 	public void write() throws MojoExecutionException {
@@ -52,7 +51,7 @@ public class RModelWriter {
 			
 			Map<String,Object> typeRoot = new HashMap<>();
 			typeRoot.put("class", type);
-			typeRoot.put("pathToJar", pathToJar.toString());
+			typeRoot.put("jarFileName", jarFileName);
 			
 			doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
 			doGenerate(new File(target,"DESCRIPTION"),getTemplate("/description.ftl"),typeRoot);

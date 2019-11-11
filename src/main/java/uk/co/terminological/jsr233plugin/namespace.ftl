@@ -7,3 +7,5 @@ export(${method.getName()})
 <#list class.getMethodImports() as import>
 import(${import})
 </#list>
+import(jsr223)
+import(magrittr)

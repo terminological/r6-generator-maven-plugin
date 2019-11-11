@@ -67,7 +67,7 @@ public class QDoxParser {
 							out.getAnnotations().put(k, v)));
 		
 		out.setName(m.getName());
-		out.setReturnType(m.getReturns().getCanonicalName());
+		out.setReturnType(m.getReturns().getFullyQualifiedName());
 		out.setFluent(m.getReturns().equals(m.getDeclaringClass()));
 		
 		m.getParameters().stream().forEach(

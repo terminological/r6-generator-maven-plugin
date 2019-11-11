@@ -12,10 +12,15 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.maven.execution.MavenSession;
@@ -50,8 +55,9 @@ public class JS223Plugin extends AbstractMojo {
 					artifactId("maven-assembly-plugin"),
 					version("3.2.0")),
 				goal("single"),
-				configuration(element(name("descriptorRefs"), 
-						element(name("descriptorRef"),"jar-with-dependencies")
+				configuration(
+						element(name("descriptorRefs"), 
+							element(name("descriptorRef"),"jar-with-dependencies")
 						)),
 				executionEnvironment(
 						mavenProject,
@@ -60,18 +66,35 @@ public class JS223Plugin extends AbstractMojo {
 		
 		
 		// Copy the jar the a lib directory
-		
 		String jarFile = mavenProject.getModel().getBuild().getFinalName()+"-jar-with-dependencies.jar";
 		File targetDir = new File(mavenProject.getModel().getBuild().getDirectory());
 		Path rootDir = mavenProject.getBasedir().toPath();
 		Path jarLoc = rootDir.resolve("inst").resolve("java").resolve(jarFile);
+		
+		
 				
 		try {
+			
+			URI uri = JS223Plugin.class.getResource("/groovy-all-2.4.17.jar").toURI();
+			
+			String[] array = uri.toString().split("!");
+			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), new HashMap<>());
+			Path groovyLoc =fs.getPath(array[1]);
+			
 			Files.createDirectories(jarLoc.getParent());
+			
+			Files.copy(
+					groovyLoc, 
+					rootDir.resolve("inst").resolve("java").resolve("groovy-all-2.4.17.jar"),
+					StandardCopyOption.REPLACE_EXISTING);
+			
+			fs.close();
+			
 			Files.move(
 					Paths.get(targetDir.getAbsolutePath(), jarFile), 
 					jarLoc, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
+			
+		} catch (IOException | URISyntaxException e) {
 			throw new MojoExecutionException("Couldn't move fat jar",e);
 		}
 		
@@ -81,7 +104,7 @@ public class JS223Plugin extends AbstractMojo {
 			RModelWriter writer = new RModelWriter(
 					model.get(), 
 					mavenProject.getBasedir(),
-					rootDir.relativize(jarLoc)
+					jarFile
 					);
 			writer.write();
 			

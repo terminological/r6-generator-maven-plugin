@@ -21,4 +21,5 @@ Imports:
 <#list class.getList("imports") as import>
 	${import},
 </#list>
-	jsr223
+	jsr223,
+	rprojroot
