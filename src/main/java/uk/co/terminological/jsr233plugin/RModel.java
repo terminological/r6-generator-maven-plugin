@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import java.util.Collections;
+
 public class RModel {
 
 	private Type type;
@@ -58,13 +60,21 @@ public class RModel {
 		}
 		
 		public String getValue(String s) {
-			return annotations.get(s) == null ? "" : annotations.get(s).toString();
+			return annotations.get(s) == null ? "" : stripQuotes((String) annotations.get(s));
 		}
 		
-		public String[] getList(String s) {
-			return annotations.get(s) == null ? new String[] {} : (String[]) annotations.get(s) ;
+		@SuppressWarnings("unchecked")
+		public List<String> getList(String s) {
+			return annotations.get(s) == null ? 
+					Collections.emptyList() : 
+						((List<String>) annotations.get(s)).stream().map(RModel::stripQuotes)
+						.collect(Collectors.toList()) ;
 		}
 		
+	}
+	
+	private static String stripQuotes(String s) {
+		return s.replace("\"", "");
 	}
 	
 	public static class Type {
@@ -105,11 +115,15 @@ public class RModel {
 		}
 		
 		public String getValue(String s) {
-			return annotations.get(s) == null ? "" : annotations.get(s).toString();
+			return annotations.get(s) == null ? "" : stripQuotes((String) annotations.get(s));
 		}
 		
-		public String[] getList(String s) {
-			return annotations.get(s) == null ? new String[] {} : (String[]) annotations.get(s) ;
+		@SuppressWarnings("unchecked")
+		public List<String> getList(String s) {
+			return annotations.get(s) == null ? 
+					Collections.emptyList() : 
+						((List<String>) annotations.get(s)).stream().map(RModel::stripQuotes)
+						.collect(Collectors.toList()) ;
 		}
 	}
 
