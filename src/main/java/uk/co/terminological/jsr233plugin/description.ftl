@@ -1,25 +1,23 @@
-Package: ${class.getValue("packageName")}
-Title: ${class.getValue("title")}
-Version: ${class.getValue("version")}
-<#if class.getList("authors")[0]??>
-Authors@R: 
-    person(given = ${class.getList("authors")[0]!"anon"},
-           family = ${class.getList("authors")[1]!"anon"},
-           role = c("aut", "cre"),
-           email = ${class.getList("authors")[2]!"anon@exmaple.com"},
-           comment = structure(${class.getList("authors")[3]!"n/a"}, .Names = "ORCID"))
-</#if>
-Description: ${class.getValue("description")!}
-License: ${class.getValue("license")!}
+Package: ${model.getConfig().getPackageName()}
+Title: ${model.getConfig().getTitle()}
+Version: ${model.getConfig().getVersion()}
+Authors@R: c(
+	<#list model.getAuthors() as author>
+    person(given = "${author[0]}",<#if author[1]??>family = "${author[1]}",</#if><#if author[2]??>email = "${author[2]}",</#if><#if author[3]??>comment = structure("${author[3]}", .Names = "ORCID"),</#if>role = <#if author?is_first>c("aut", "cre")<#else>"aut"</#if>)<#sep>,
+	</#list>
+)
+Description: ${model.getConfig().getDescription()!}
+License: ${model.getConfig().getLicense()!}
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-<#list class.getList("suggests") as suggest>
+<#list model.getSuggests() as suggest>
 	${suggest}<#sep>,
 </#list>
+
 Imports:
-<#list class.getList("imports") as import>
+<#list model.getImports() as import>
 	${import},
 </#list>
 	jsr223,
-	rprojroot
+	R6

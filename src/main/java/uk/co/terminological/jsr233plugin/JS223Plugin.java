@@ -30,6 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
@@ -45,6 +46,9 @@ public class JS223Plugin extends AbstractMojo {
 
 	@Component
 	private BuildPluginManager pluginManager;
+	
+	@Parameter(required=true)
+	private JS223Execution packageData;
 	
 	public void execute() throws MojoExecutionException {
 		
@@ -98,7 +102,7 @@ public class JS223Plugin extends AbstractMojo {
 			throw new MojoExecutionException("Couldn't move fat jar",e);
 		}
 		
-		Optional<RModel> model = QDoxParser.scanModel(mavenProject.getCompileSourceRoots());
+		Optional<RModel> model = QDoxParser.scanModel(mavenProject.getCompileSourceRoots(), packageData);
 		if (model.isPresent()) {
 			
 			RModelWriter writer = new RModelWriter(

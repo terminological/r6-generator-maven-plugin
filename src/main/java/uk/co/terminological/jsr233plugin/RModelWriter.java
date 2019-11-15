@@ -47,25 +47,29 @@ public class RModelWriter {
 		File manDir = new File(target,"man");
 		manDir.mkdirs();
 		
-		RModel.Type type = model.getClassType();
+		Map<String,Object> typeRoot = new HashMap<>();
+		typeRoot.put("model", model);
+		typeRoot.put("jarFileName", jarFileName);
+	
+		doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
+		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/description.ftl"),typeRoot);
+		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/man.ftl"),typeRoot);
+				
+		for (RModel.Type type: model.getClassTypes()) {
 			
-			Map<String,Object> typeRoot = new HashMap<>();
 			typeRoot.put("class", type);
-			typeRoot.put("jarFileName", jarFileName);
 			
-			doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
-			doGenerate(new File(target,"DESCRIPTION"),getTemplate("/description.ftl"),typeRoot);
-			doGenerate(new File(rDir,type.getName()+".R"),getTemplate("/r.ftl"),typeRoot);
-			doGenerate(new File(manDir,"java"+type.getName()+".Rd"),getTemplate("/rd.ftl"),typeRoot);
+			doGenerate(new File(rDir,"J"+type.getName()+".R"),getTemplate("/r.ftl"),typeRoot);
+			doGenerate(new File(manDir,"J"+type.getName()+".Rd"),getTemplate("/rd.ftl"),typeRoot);
 			
-			for (RModel.Method method: type.getMethods()) {
+			/*for (RModel.Method method: type.getMethods()) {
 				
-				Map<String,Object> methodRoot = new HashMap<>();
-				methodRoot.put("method", method);
-				doGenerate(new File(manDir,method.getName()+".Rd"),getTemplate("/man.ftl"),methodRoot);
+				typeRoot.put("method", method);
+				doGenerate(new File(manDir,method.getName()+".Rd"),getTemplate("/man.ftl"),typeRoot);
 				
-			}
+			}*/
 			
+		}
 		
 	}
 
