@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class JS223Execution {
+public class PackageData {
 
 	@Parameter
 	private File[] inputFiles;

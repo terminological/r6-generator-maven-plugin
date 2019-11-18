@@ -35,7 +35,7 @@ public class QDoxParser {
 		
 	}
 
-	public static Optional<RModel> scanModel(List<?> list, JS223Execution config) throws MojoExecutionException {
+	public static Optional<RModel> scanModel(List<?> list, PackageData config) throws MojoExecutionException {
 		QDoxParser out = new QDoxParser();
 		return out.scanSourceModel(
 			list.stream().map(o -> {
@@ -47,7 +47,7 @@ public class QDoxParser {
 		
 	}
 
-	private Optional<RModel> scanSourceModel(List<File> sourceFolders, JS223Execution config) throws MojoExecutionException {
+	private Optional<RModel> scanSourceModel(List<File> sourceFolders, PackageData config) throws MojoExecutionException {
 		RModel out = new RModel(config);
 		sourceFolders.forEach(sf -> jpb.addSourceTree(sf));
 		jpb.getClasses().stream().map(c->c.getCanonicalName()).forEach(System.out::println);
@@ -82,6 +82,7 @@ public class QDoxParser {
 		out.setName(m.getName());
 		out.setReturnType(m.getReturns().getFullyQualifiedName());
 		out.setFluent(m.getReturns().equals(m.getDeclaringClass()));
+		out.setStatic(m.isStatic());
 		
 		m.getParameters().stream().forEach(
 				jp -> {
@@ -162,6 +163,7 @@ public class QDoxParser {
 		out.setName("new");
 		out.setDescription("the default no-args constructor");
 		out.setFluent(false);
+		out.setStatic(true);
 		out.setReturnType(c.getFullyQualifiedName());
 		return out;
 	}
@@ -182,6 +184,7 @@ public class QDoxParser {
 		out.setName("new");
 		out.setReturnType(m.getDeclaringClass().getFullyQualifiedName());
 		out.setFluent(false);
+		out.setStatic(true);
 		
 		m.getParameters().stream().forEach(
 				jp -> {

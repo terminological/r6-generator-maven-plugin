@@ -30,13 +30,20 @@ J${class.getName()} = R6::R6Class("J${class.getName()}", public=list(
 	<#list method.getParameterNames() as param>
 		self$api$tmp_${param} = ${param};
 	</#list>
-		self$api %@% 'x = x.${method.getName()}(<#list method.getParameterNames() as param>tmp_${param}<#sep>, </#list>);';
+		self$api %@% 'x = <#if method.isStatic()>${class.getName()}<#else>x</#if>.${method.getName()}(<#list method.getParameterNames() as param>tmp_${param}<#sep>, </#list>);';
 	<#list method.getParameterNames() as param>
 		self$api$remove("tmp_${param}")
 	</#list>
 		invisible(self);
 <#else>
-		return(self$api$invokeMethod("x", "${method.getName()}"<#list method.getParameterNames() as param>, ${param}</#list>))
+	<#list method.getParameterNames() as param>
+		self$api$tmp_${param} = ${param};
+	</#list>
+		out = self$api %~% '<#if method.isStatic()>${class.getName()}<#else>x</#if>.${method.getName()}(<#list method.getParameterNames() as param>tmp_${param}<#sep>, </#list>);';
+	<#list method.getParameterNames() as param>
+		self$api$remove("tmp_${param}")
+	</#list>
+		return(out);
 </#if>
 	},
 

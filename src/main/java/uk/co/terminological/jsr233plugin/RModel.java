@@ -17,9 +17,9 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 public class RModel {
 
 	private List<Type> types = new ArrayList<>();
-	private JS223Execution config;
+	private PackageData config;
 		
-	public RModel(JS223Execution config) {
+	public RModel(PackageData config) {
 		this.config = config;
 	}
 
@@ -39,7 +39,7 @@ public class RModel {
 		).collect(Collectors.toSet());
 	}
 	
-	public JS223Execution getConfig() {
+	public PackageData getConfig() {
 		return config;
 	}
 	
@@ -105,6 +105,7 @@ public class RModel {
 		private List<String> parameterTypes = new ArrayList<>();
 		private String returnType;
 		private boolean isFluent = false;
+		private boolean isStatic = false;
 		private String description;
 		
 		public String getReturnType() {
@@ -146,6 +147,12 @@ public class RModel {
 		}
 		public String getParameterType(String paramName) {
 			return getParameterTypes().get(getParameterNames().indexOf(paramName));
+		}
+		public void setStatic(boolean static1) {
+			this.isStatic = static1;
+		}
+		public boolean isStatic() {
+			return isStatic;
 		}
 		
 	}

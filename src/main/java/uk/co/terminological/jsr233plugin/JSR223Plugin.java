@@ -36,7 +36,7 @@ import org.apache.maven.project.MavenProject;
 /**
  */
 @Mojo( name = "generate-r-library", defaultPhase = LifecyclePhase.INSTALL )
-public class JS223Plugin extends AbstractMojo {
+public class JSR223Plugin extends AbstractMojo {
 
 	@Component
 	private MavenProject mavenProject;
@@ -48,7 +48,7 @@ public class JS223Plugin extends AbstractMojo {
 	private BuildPluginManager pluginManager;
 	
 	@Parameter(required=true)
-	private JS223Execution packageData;
+	private PackageData packageData;
 	
 	public void execute() throws MojoExecutionException {
 		
@@ -79,7 +79,7 @@ public class JS223Plugin extends AbstractMojo {
 				
 		try {
 			
-			URI uri = JS223Plugin.class.getResource("/groovy-all-2.4.17.jar").toURI();
+			URI uri = JSR223Plugin.class.getResource("/groovy-all-2.4.17.jar").toURI();
 			
 			String[] array = uri.toString().split("!");
 			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), new HashMap<>());
