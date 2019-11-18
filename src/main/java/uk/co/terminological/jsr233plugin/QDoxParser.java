@@ -53,7 +53,7 @@ public class QDoxParser {
 		jpb.getClasses().stream().map(c->c.getCanonicalName()).forEach(System.out::println);
 		for (JavaClass clazz: jpb.getClasses()) {
 			if (hasAnnotation(RClass.class,clazz)) {
-				RModel.Type type = createClass(clazz);
+				RModel.Type type = createClass(clazz,out);
 				out.getClassTypes().add(type);
 			}
 		}
@@ -64,8 +64,8 @@ public class QDoxParser {
 	}
 	
 
-	public RModel.Method createMethod(JavaMethod m) {
-		RModel.Method out = new RModel.Method();
+	public RModel.Method createMethod(JavaMethod m, RModel model) {
+		RModel.Method out = new RModel.Method(model);
 		
 		getAnnotation(RMethod.class,m).ifPresent(
 				a -> a.getNamedParameterMap().forEach((k,v) ->
@@ -81,7 +81,10 @@ public class QDoxParser {
 		
 		out.setName(m.getName());
 		out.setReturnType(m.getReturns().getFullyQualifiedName());
-		out.setFluent(m.getReturns().equals(m.getDeclaringClass()));
+		out.setReturnSimple(m.getReturns().getValue()); //
+		out.setFluent(
+				m.getReturns().equals(m.getDeclaringClass())
+				);
 		out.setStatic(m.isStatic());
 		
 		m.getParameters().stream().forEach(
@@ -95,8 +98,8 @@ public class QDoxParser {
 
 	}
 
-	public RModel.Type createClass(JavaClass clazz) throws MojoExecutionException {
-		RModel.Type out = new RModel.Type();
+	public RModel.Type createClass(JavaClass clazz, RModel model) throws MojoExecutionException {
+		RModel.Type out = new RModel.Type(model);
 		
 		getAnnotation(RClass.class,clazz).ifPresent(
 				a -> a.getNamedParameterMap().forEach((k,v) ->
@@ -117,20 +120,20 @@ public class QDoxParser {
 		
 		if (clazz.getConstructors().isEmpty()) {
 			// Use a default no-arg constructor if there are none defined
-			out.setConstructor(this.noargsConstructor(clazz));
+			out.setConstructor(this.noargsConstructor(clazz,model));
 		} else {
 			// Use the first annotated construcotr
 			clazz.getConstructors().stream().filter(c ->
 				c.isPublic() && hasAnnotation(RMethod.class,c)
 					).findFirst().ifPresent(c ->
-						out.setConstructor(createConstructor(c))
+						out.setConstructor(createConstructor(c,model))
 					);
 			// Otherwise ise the first no-args constructor
 			if (out.getConstructor() == null) {
 				clazz.getConstructors().stream().filter(c ->
 						c.isPublic() && c.getParameters().isEmpty()
 						).findFirst().ifPresent(c ->
-							out.setConstructor(createConstructor(c))
+							out.setConstructor(createConstructor(c,model))
 								);
 			}
 			//Otherwise use the first public
@@ -138,7 +141,7 @@ public class QDoxParser {
 				clazz.getConstructors().stream().filter(c ->
 						c.isPublic()
 						).findFirst().ifPresent(c ->
-							out.setConstructor(createConstructor(c))
+							out.setConstructor(createConstructor(c,model))
 								);
 			}			
 			//Otherwise there is no appropriate constructor.
@@ -150,7 +153,7 @@ public class QDoxParser {
 		
 		for (JavaMethod m: clazz.getMethods(true)) {
 			if (m.isPublic() && hasAnnotation(RMethod.class,m)) {
-				RModel.Method method = createMethod(m);
+				RModel.Method method = createMethod(m,model);
 				out.addMethod(method);
 			}
 		}
@@ -158,18 +161,19 @@ public class QDoxParser {
 		return out;
 	}
 
-	private Method noargsConstructor(JavaClass c) {
-		RModel.Method out = new RModel.Method();
+	private Method noargsConstructor(JavaClass c, RModel model) {
+		RModel.Method out = new RModel.Method(model);
 		out.setName("new");
 		out.setDescription("the default no-args constructor");
 		out.setFluent(false);
 		out.setStatic(true);
 		out.setReturnType(c.getFullyQualifiedName());
+		out.setReturnSimple(c.getValue());
 		return out;
 	}
 			
-	private Method createConstructor(JavaConstructor m) {
-		RModel.Method out = new RModel.Method();
+	private Method createConstructor(JavaConstructor m, RModel model) {
+		RModel.Method out = new RModel.Method(model);
 		
 		getAnnotation(RMethod.class,m).ifPresent(
 				a -> a.getNamedParameterMap().forEach((k,v) ->
@@ -183,6 +187,7 @@ public class QDoxParser {
 		
 		out.setName("new");
 		out.setReturnType(m.getDeclaringClass().getFullyQualifiedName());
+		out.setReturnSimple(m.getDeclaringClass().getValue());
 		out.setFluent(false);
 		out.setStatic(true);
 		

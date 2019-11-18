@@ -107,7 +107,19 @@ public class RModel {
 		private boolean isFluent = false;
 		private boolean isStatic = false;
 		private String description;
+		private String returnSimple;
+		private RModel model;
 		
+		public Method(RModel model) {
+			this.model = model;
+		}
+		
+		public String getReturnSimple() {
+			return returnSimple;
+		}
+		public void setReturnSimple(String returnSimple) {
+			this.returnSimple = returnSimple;
+		}
 		public String getReturnType() {
 			return returnType;
 		}
@@ -128,6 +140,9 @@ public class RModel {
 		}
 		public boolean isFluent() {
 			return isFluent;
+		}
+		public boolean isFactory() {
+			return model.types.stream().map(s -> s.getClassName()).anyMatch(s2 -> s2.equals(this.getReturnType()));
 		}
 		public void setFluent(boolean isFluent) {
 			this.isFluent = isFluent;
@@ -155,6 +170,13 @@ public class RModel {
 			return isStatic;
 		}
 		
+		public String getParameterCsv() {
+			return getParameterNames().stream().collect(Collectors.joining(", "));
+		}
+		public String getParameterCsv(String pre) {
+			return getParameterNames().stream().map(s->pre+s).collect(Collectors.joining(", "));
+		}
+		
 	}
 	
 	private static String stripQuotes(String s) {
@@ -169,6 +191,11 @@ public class RModel {
 		private String description;
 		private String details;
 		private Method constructor;
+		private RModel model;
+		
+		public Type(RModel model) {
+			this.model = model;
+		}
 		
 		public String getClassName() {
 			return className;
@@ -207,14 +234,34 @@ public class RModel {
 		public Method getConstructor() {
 			return constructor;
 		}
+		public List<Method> getConstructors() {
+			return Collections.singletonList(constructor); //TODO: extend to multiple constructors
+		}
 		public void setConstructor(Method constructor) {
 			this.constructor = constructor;
 		}
 		public List<Method> getConstructorAndMethods() {
 			List<Method> out = new ArrayList<Method>();
-			out.add(getConstructor());
+			out.addAll(getConstructors());
 			out.addAll(getMethods());
 			return out;
+		}
+		public List<Method> getConstructorsAndStaticMethods() {
+			List<Method> out = new ArrayList<Method>();
+			out.addAll(getConstructors());
+			out.addAll(getStaticMethods());
+			return out;
+		}
+		
+		public List<Method> getStaticMethods() {
+			return getMethods().stream().filter(m -> m.isStatic()).collect(Collectors.toList());
+		}
+		public boolean hasStaticMethods() {
+			return !getStaticMethods().isEmpty();
+		}
+		
+		public List<Method> getInstanceMethods() {
+			return getMethods().stream().filter(m -> !m.isStatic()).collect(Collectors.toList());
 		}
 	}
 

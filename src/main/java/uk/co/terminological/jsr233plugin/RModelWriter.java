@@ -51,16 +51,21 @@ public class RModelWriter {
 		typeRoot.put("model", model);
 		typeRoot.put("jarFileName", jarFileName);
 	
-		doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
+		//doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
+		doGenerate(new File(target,"NAMESPACE"),getTemplate("/altNamespace.ftl"),typeRoot);
 		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/description.ftl"),typeRoot);
-		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/man.ftl"),typeRoot);
-				
+		doGenerate(new File(manDir,"JavaApi.Rd"),getTemplate("/altJavaApiRd.ftl"),typeRoot);
+		//doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/man.ftl"),typeRoot);
+		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/altMan.ftl"),typeRoot);
+		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/altR.ftl"),typeRoot);
+		
 		for (RModel.Type type: model.getClassTypes()) {
 			
 			typeRoot.put("class", type);
 			
-			doGenerate(new File(rDir,"J"+type.getName()+".R"),getTemplate("/r.ftl"),typeRoot);
-			doGenerate(new File(manDir,"J"+type.getName()+".Rd"),getTemplate("/rd.ftl"),typeRoot);
+			//doGenerate(new File(rDir,"J"+type.getName()+".R"),getTemplate("/r.ftl"),typeRoot);
+			//doGenerate(new File(manDir,"J"+type.getName()+".Rd"),getTemplate("/rd.ftl"),typeRoot);
+			doGenerate(new File(manDir,type.getName()+".Rd"),getTemplate("/altRd.ftl"),typeRoot);
 			
 			/*for (RModel.Method method: type.getMethods()) {
 				
