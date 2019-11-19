@@ -33,7 +33,11 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 			# constructor
 			# copy parameters
 		<#list method.getParameterNames() as param>
-			self$.engine$tmp_${param} = ${param};
+			<#if model.definesClass(method.getParameterType(param))>
+		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+			<#else>
+		self$.engine$tmp_${param} = ${param};
+			</#if>
 		</#list>
 			objId = self$.engine %~% '
 				synchronized(objs) {
@@ -54,7 +58,11 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 		${method.getName()} = function(${method.getParameterCsv()}) {
 			# copy parameters
 			<#list method.getParameterNames() as param>
+				<#if model.definesClass(method.getParameterType(param))>
+			self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+				<#else>
 			self$.engine$tmp_${param} = ${param};
+				</#if>
 			</#list>
 			#execute static call
 		 	<#if method.isFactory()>
@@ -101,8 +109,13 @@ ${class.getName()} = R6::R6Class("${class.getName()}", public=list(
 	<#list class.getInstanceMethods() as method>
 	${method.getName()} = function(${method.getParameterCsv()}) {
 		# copy parameters
+		# TODO: do something different is param is a class - pass by id
 		<#list method.getParameterNames() as param>
+			<#if model.definesClass(method.getParameterType(param))>
+		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+			<#else>
 		self$.engine$tmp_${param} = ${param};
+			</#if>
 		</#list>
 		self$.engine$tmp2_objId = self$.objId;
 		<#if method.isFactory()>

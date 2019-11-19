@@ -56,6 +56,10 @@ public class RModel {
 		return tmp;
 	}
 
+	public boolean definesClass(String classname) {
+		return this.types.stream().map(t -> t.getClassName()).anyMatch(cn -> cn.equals(classname));
+	}
+	
 	public static class Annotated {
 		private Map<String,List<String>> annotations = new HashMap<>(); 
 		public Map<String, List<String>> getAnnotations() {
