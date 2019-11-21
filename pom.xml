@@ -35,9 +35,10 @@
 			<version>2.2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
+			<!-- <groupId>uk.co.terminological</groupId>-->
 			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.0</version>
+	    	<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -51,6 +52,13 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.dstovall/onejar-maven-plugin -->
 	</dependencies>
+
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
