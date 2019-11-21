@@ -1,10 +1,12 @@
 package uk.co.terminological.jsr233plugin;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,13 +14,111 @@ import java.util.stream.Collectors;
 
 import com.thoughtworks.qdox.model.DocletTag;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 public class RModel {
 
 	private List<Type> types = new ArrayList<>();
 	private PackageData config;
-		
+	
+	private static List<String> supportedLengthOneOutputs = Arrays.asList(
+			Integer.class.getCanonicalName(), 
+			int.class.getCanonicalName(),
+			String.class.getCanonicalName(),
+			Byte.class.getCanonicalName(), 
+			byte.class.getCanonicalName(),
+			Character.class.getCanonicalName(), 
+			char.class.getCanonicalName(),
+			Double.class.getCanonicalName(), 
+			double.class.getCanonicalName(),
+			Float.class.getCanonicalName(), 
+			float.class.getCanonicalName(),
+			BigDecimal.class.getCanonicalName(),
+			BigInteger.class.getCanonicalName(),
+			Short.class.getCanonicalName(), 
+			short.class.getCanonicalName(),
+			Long.class.getCanonicalName(), 
+			long.class.getCanonicalName()
+	);
+	
+	private static List<String> supportedLengthOneInputs = Arrays.asList(
+			Double.class.getCanonicalName(), 
+			Integer.class.getCanonicalName(), 
+			String.class.getCanonicalName(),
+			Boolean.class.getCanonicalName(), 
+			Byte.class.getCanonicalName()
+	);
+	private static List<String> supportedArrayInputs = Arrays.asList(
+			double.class.getCanonicalName(), 
+			int.class.getCanonicalName(), 
+			String.class.getCanonicalName(), 
+			boolean.class.getCanonicalName(), 
+			byte.class.getCanonicalName()
+	);
+	
+	public static boolean isSupportedInput(String fqn, boolean isArray, String[] genericTypes) {
+		return isSupportedInput(fqn,isArray, genericTypes,false); //defaults to colMajor
+	}
+	
+	public static boolean isSupportedInput(String fqn, boolean isArray, String[] genericTypes, boolean rowMajor) {
+		if (!isArray && genericTypes.length == 0) {
+			if (supportedLengthOneInputs.contains(fqn)) return true;
+			else return false;
+		} else {
+			if (isArray) {
+				return supportedArrayInputs.contains(fqn);
+			}
+			//Generic type
+			if (fqn.contains("Set")) {
+				return supportedLengthOneInputs.contains(genericTypes[0]);
+			}
+			if (fqn.contains("List")) {
+				if (rowMajor && genericTypes[0].contains("Map")) return true; //list of maps possible from data frame
+				//TODO: log something if this is a col major.
+				return supportedLengthOneInputs.contains(genericTypes[0]);
+			}
+			if (fqn.contains("Map")) {
+				if (
+					!rowMajor
+					&& genericTypes[0].equals("java.lang.String")
+					&& genericTypes[1].contains("Object[]")
+					//TODO: log something if this is a row major.
+				) return true; //map<String,Object[]> possible from data frame
+				if (
+					genericTypes[0].equals("java.lang.String")
+					&& supportedLengthOneInputs.contains(genericTypes[1])
+				) return true;
+			}
+		}
+		return false;
+	}
+	
+	//fqn here is either Object.class.getCanonicalName())
+	// or if array Object[].class.getComponentType().getCanonicalName()
+	public static boolean isSupportedOutput(String fqn, boolean isArray, String[] genericTypes) {
+		if (genericTypes.length == 0) {
+			if (supportedLengthOneOutputs.contains(fqn)) return true;
+			else return false;
+		} else {
+			if (fqn.contains("Set")) {
+				return supportedLengthOneOutputs.contains(genericTypes[0]);
+			}
+			if (fqn.contains("List")) {
+				if (genericTypes[0].contains("Map")) return true; //list of maps possible from data frame
+				return supportedLengthOneOutputs.contains(genericTypes[0]);
+			}
+			if (fqn.contains("Map")) {
+				if (
+					genericTypes[0].equals("java.lang.String")
+					&& genericTypes[1].contains("Object")
+				) return true; //map<String,Object[]> possible from data frame
+				if (
+					genericTypes[0].equals("java.lang.String")
+					&& supportedLengthOneOutputs.contains(genericTypes[1])
+				) return true;
+			}
+		}
+		return false;
+	}
+	
 	public RModel(PackageData config) {
 		this.config = config;
 	}
@@ -80,7 +180,6 @@ public class RModel {
 			mergeAnnotations(dt.getName(), dt.getValue());
 		}
 		
-		@SuppressWarnings("unchecked")
 		public void mergeAnnotations(String key, Object value) {
 			List<String> tmp;
 			if (value instanceof Collection<?>) {
@@ -107,19 +206,28 @@ public class RModel {
 		private String methodName;
 		private List<String> parameterNames = new ArrayList<>();
 		private List<String> parameterTypes = new ArrayList<>();
+		private List<Boolean> parameterByValue = new ArrayList<>();
 		private String returnType;
-		private boolean isFluent = false;
 		private boolean isStatic = false;
+		private boolean byValue = false;
 		private String description;
 		private String returnSimple;
 		private RModel model;
 		
+		public void setByValue(boolean byValue) {
+			this.byValue = byValue;
+		}
+		public boolean byValue() {
+			return this.byValue;
+		}
 		public Method(RModel model) {
 			this.model = model;
 		}
-		
 		public String getReturnSimple() {
-			return returnSimple;
+			if (byValue || 
+					model.types.stream().map(s -> s.getClassName()).anyMatch(s2 -> s2.equals(this.getReturnType()))) {
+				return returnSimple;
+			} else return "Object";
 		}
 		public void setReturnSimple(String returnSimple) {
 			this.returnSimple = returnSimple;
@@ -142,14 +250,8 @@ public class RModel {
 		public void setReturnType(String canonicalName) {
 			this.returnType = canonicalName;	
 		}
-		public boolean isFluent() {
-			return isFluent;
-		}
 		public boolean isFactory() {
 			return model.types.stream().map(s -> s.getClassName()).anyMatch(s2 -> s2.equals(this.getReturnType()));
-		}
-		public void setFluent(boolean isFluent) {
-			this.isFluent = isFluent;
 		}
 		public String getDescription() {
 			return description;
@@ -157,6 +259,7 @@ public class RModel {
 		public void setDescription(String string) {
 			this.description = string;
 		}
+		
 		public String getParameterDescription(String paramName) {
 			if (this.getAnnotations().get("param") == null) return paramName;
 			String tmp = this.getAnnotations().get("param").stream()
@@ -164,9 +267,19 @@ public class RModel {
 				.collect(Collectors.joining());
 			return tmp.isEmpty() ? paramName : tmp;
 		}
+		
 		public String getParameterType(String paramName) {
 			return getParameterTypes().get(getParameterNames().indexOf(paramName));
 		}
+		
+		public boolean getParameterByValue(String paramName) {
+			return getParameterByValues().get(getParameterNames().indexOf(paramName));
+		}
+		
+		public List<Boolean> getParameterByValues() {
+			return parameterByValue;
+		}
+
 		public void setStatic(boolean static1) {
 			this.isStatic = static1;
 		}
@@ -198,7 +311,7 @@ public class RModel {
 		private RModel model;
 		
 		public Type(RModel model) {
-			this.model = model;
+			this.setModel(model);
 		}
 		
 		public String getClassName() {
@@ -266,6 +379,14 @@ public class RModel {
 		
 		public List<Method> getInstanceMethods() {
 			return getMethods().stream().filter(m -> !m.isStatic()).collect(Collectors.toList());
+		}
+
+		public RModel getModel() {
+			return model;
+		}
+
+		public void setModel(RModel model) {
+			this.model = model;
 		}
 	}
 

@@ -31,11 +31,13 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 /**
  */
-@Mojo( name = "generate-r-library", defaultPhase = LifecyclePhase.INSTALL )
+
+@Mojo( name = "generate-r-library", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class JSR223Plugin extends AbstractMojo {
 
 	@Component
@@ -94,7 +96,7 @@ public class JSR223Plugin extends AbstractMojo {
 			
 			fs.close();
 			
-			Files.move(
+			Files.copy(
 					Paths.get(targetDir.getAbsolutePath(), jarFile), 
 					jarLoc, StandardCopyOption.REPLACE_EXISTING);
 			

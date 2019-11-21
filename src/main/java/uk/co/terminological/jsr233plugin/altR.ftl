@@ -33,10 +33,10 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 			# constructor
 			# copy parameters
 		<#list method.getParameterNames() as param>
-			<#if model.definesClass(method.getParameterType(param))>
-		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+			<#if method.getParameterByValue(param)>
+		self$.engine$tmp_${param} = ${param}; # copy parameter by value
 			<#else>
-		self$.engine$tmp_${param} = ${param};
+		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');  # copy parameter by reference
 			</#if>
 		</#list>
 			objId = self$.engine %~% '
@@ -58,15 +58,15 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 		${method.getName()} = function(${method.getParameterCsv()}) {
 			# copy parameters
 			<#list method.getParameterNames() as param>
-				<#if model.definesClass(method.getParameterType(param))>
-			self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+				<#if method.getParameterByValue(param)>
+			self$.engine$tmp_${param} = ${param}; # by value
 				<#else>
-			self$.engine$tmp_${param} = ${param};
+			self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']'); # by reference
 				</#if>
 			</#list>
 			#execute static call
-		 	<#if method.isFactory()>
-			# execute static method and return pointer to create objId   
+		 	<#if !method.byValue()>
+			# execute static method and return object by reference (always creates a new instance)   
 			objId = self$.engine %~% '
 				synchronized(objs) {
 					objs[nextObjId] = ${class.getClassName()}.${method.getName()}(${method.getParameterCsv("tmp_")});
@@ -74,11 +74,10 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 				}
 				return nextObjId-1;
 			'
-			# wrap resulting id in R class
-			# TODO: this maybe create multiple copies of a java object in R. Possibly should maintain a lookup.
+			# wrap resulting id in R class - static methods always create instances
 			out = ${method.getReturnSimple()}$new(self$.engine, objId)
 			<#else>
-			# execute static method
+			# execute static method and return object by value
 			out = self$.engine %~% '
 				return ${class.getClassName()}.${method.getName()}(${method.getParameterCsv("tmp_")});
 			'
@@ -88,14 +87,30 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 			self$.engine$remove("tmp_${param}")
 		</#list>
 			<#if method.getReturnType() != "void">return(out)<#else>invisible(NULL)</#if>
-			# TODO: fluent methods should return invisible(self) or a reference to the same object
 		}<#sep>,
 	</#list>
 	)
 </#list>
 	}
-  
-  
+))
+
+## a generic catch all object reference for classes that cannot be mapped to and from Java.
+Object = R6::R6Class("Object", public=list(
+	.engine = NULL,
+	.objId = NULL,
+	initialize = function(engine,objectId){
+		self$.engine = engine;
+		self$.objId = objectId;
+	},
+	print = function() {
+		self$.engine$tmp2_objId = self$.objId;
+		out = self$.engine %~% '
+			return objs[tmp2_objId].toString();
+		'
+		self$.engine$remove("tmp2_objId")
+		print(out)
+		invisible(self)
+	}
 ))
 
 <#list model.getClassTypes() as class>
@@ -109,29 +124,31 @@ ${class.getName()} = R6::R6Class("${class.getName()}", public=list(
 	<#list class.getInstanceMethods() as method>
 	${method.getName()} = function(${method.getParameterCsv()}) {
 		# copy parameters
-		# TODO: do something different is param is a class - pass by id
 		<#list method.getParameterNames() as param>
-			<#if model.definesClass(method.getParameterType(param))>
-		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']');
+			<#if method.getParameterByValue(param)>
+		self$.engine$tmp_${param} = ${param}; # pass parameter by value
 			<#else>
-		self$.engine$tmp_${param} = ${param};
+		self$.engine %@% paste0('tmp_${param} = objs[',${param}$.objId,']'); # pass parameter by reference
 			</#if>
 		</#list>
 		self$.engine$tmp2_objId = self$.objId;
-		<#if method.isFactory()>
-		#execute call on instance _objId returninf a new objId   
+		<#if !method.byValue()>
+		#execute call on instance .objId returning a new (or the same) objId by reference   
 		objId = self$.engine %~% '
-			synchronized(objs) {
-				objs[nextObjId] = objs[tmp2_objId].${method.getName()}(${method.getParameterCsv("tmp_")});
-				nextObjId = nextObjId+1 
+			def tmp = objs[tmp2_objId].${method.getName()}(${method.getParameterCsv("tmp_")});
+			// if the result the same object as the original? e.g. a fluent method
+			if (tmp.is(objs[tmp2_objId])) {
+				return tmp2_objId; 
+			} else {
+				synchronized(objs) {
+					objs[nextObjId] = tmp;
+					nextObjId = nextObjId+1; 
+				}
+				return nextObjId-1;
 			}
-			return nextObjId-1;
 		'
-		# wrap resulting id in R class
-		# TODO: this maybe create multiple copies of a java object in R. Possibly should maintain a lookup.
-		out = ${method.getReturnSimple()}$new(self$.engine, objId)
 		<#else>
-		#execute call on instance _objId returning a result
+		#execute call on instance .objId returning a result by value
 		out = self$.engine %~% '
 			return objs[tmp2_objId].${method.getName()}(${method.getParameterCsv("tmp_")});
 		'
@@ -141,8 +158,20 @@ ${class.getName()} = R6::R6Class("${class.getName()}", public=list(
 		<#list method.getParameterNames() as param>
 		self$.engine$remove("tmp_${param}")
 		</#list>
-		<#if method.getReturnType() != "void">return(out)<#else>invisible(NULL)</#if>
-		# TODO: fluent methods should return invisible(self) or a reference to the same object
+		<#if method.getReturnType() == "void">
+		invisible(NULL)
+		<#else>
+			<#if method.byValue()>
+		return(out)
+			<#else>
+		if (objId == self$.objId) {
+			invisible(self) # e.g. a fluent method
+		} else {
+			out = ${method.getReturnSimple()}$new(self$.engine, objId)
+			return(out)
+		}
+			</#if>
+		</#if>
 	},
 	</#list>
 	print = function() {

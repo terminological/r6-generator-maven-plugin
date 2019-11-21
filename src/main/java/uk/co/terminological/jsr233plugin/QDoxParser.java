@@ -16,6 +16,8 @@ import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
+import com.thoughtworks.qdox.model.JavaParameterizedType;
 
 import uk.co.terminological.jsr223.RClass;
 import uk.co.terminological.jsr223.RMethod;
@@ -64,6 +66,24 @@ public class QDoxParser {
 	}
 	
 
+	private static boolean isSupported(JavaClass clazz) {
+		String tmp1 = clazz.getCanonicalName().replace("[", "").replace("]", "");
+		boolean tmp2 = clazz.isArray();
+		List<String> tmp3 = ((JavaParameterizedType) clazz).getActualTypeArguments().stream().map(
+				tp -> tp.getFullyQualifiedName()
+		).collect(Collectors.toList());
+		return RModel.isSupportedOutput(tmp1,tmp2,tmp3.toArray(new String[] {}));
+	}
+	
+	private static boolean isSupported(JavaParameter param) {
+		String tmp1 = param.getCanonicalName().replace("[", "").replace("]", "");
+		boolean tmp2 = param.getJavaClass().isArray();
+		List<String> tmp3 = ((JavaParameterizedType) param.getType()).getActualTypeArguments().stream().map(
+				tp -> tp.getFullyQualifiedName()
+		).collect(Collectors.toList());
+		return RModel.isSupportedInput(tmp1,tmp2,tmp3.toArray(new String[] {}));
+	}
+	
 	public RModel.Method createMethod(JavaMethod m, RModel model) {
 		RModel.Method out = new RModel.Method(model);
 		
@@ -76,21 +96,20 @@ public class QDoxParser {
 					m.getComment().trim()));
 		
 		m.getTags().forEach(dt -> out.mergeAnnotations(dt));
-		
-		
+				
 		
 		out.setName(m.getName());
+		
+		out.setByValue(isSupported(m.getReturns()));
 		out.setReturnType(m.getReturns().getFullyQualifiedName());
 		out.setReturnSimple(m.getReturns().getValue()); //
-		out.setFluent(
-				m.getReturns().equals(m.getDeclaringClass())
-				);
 		out.setStatic(m.isStatic());
 		
 		m.getParameters().stream().forEach(
 				jp -> {
 					out.getParameterTypes().add(jp.getType().getGenericCanonicalName());
 					out.getParameterNames().add(jp.getName());
+					out.getParameterByValues().add(isSupported(jp));
 					}
 				);
 		
@@ -165,8 +184,8 @@ public class QDoxParser {
 		RModel.Method out = new RModel.Method(model);
 		out.setName("new");
 		out.setDescription("the default no-args constructor");
-		out.setFluent(false);
 		out.setStatic(true);
+		out.setByValue(false);
 		out.setReturnType(c.getFullyQualifiedName());
 		out.setReturnSimple(c.getValue());
 		return out;
@@ -186,15 +205,16 @@ public class QDoxParser {
 		m.getTags().forEach(dt -> out.mergeAnnotations(dt));
 		
 		out.setName("new");
+		out.setByValue(false);
 		out.setReturnType(m.getDeclaringClass().getFullyQualifiedName());
 		out.setReturnSimple(m.getDeclaringClass().getValue());
-		out.setFluent(false);
 		out.setStatic(true);
 		
 		m.getParameters().stream().forEach(
 				jp -> {
 					out.getParameterTypes().add(jp.getType().getGenericCanonicalName());
 					out.getParameterNames().add(jp.getName());
+					out.getParameterByValues().add(isSupported(jp));
 					}
 				);
 		
