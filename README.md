@@ -80,12 +80,12 @@ Required Maven runtime dependency
 		<dependency>
 			<groupId>com.github.terminological</groupId>
 			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.0</version>
+			<version>1.02</version>
 		</dependency>
 ...
 ```
 
-Maven plugin example configuration:
+Maven plugin example configuration - generates a R library into the directory "r-library" in the source tree:
 
 ```XML
 ...
@@ -95,8 +95,9 @@ Maven plugin example configuration:
 			<plugin>
 				<groupId>com.github.terminological</groupId>
 				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>1.02</version>
 				<configuration>
+					<outputDirectory>${project.basedir}/r-library</outputDirectory>
 					<packageData>
 						<title>A test library</title>
 						<version>0.01</version>
@@ -122,18 +123,18 @@ Maven plugin example configuration:
 ...
 ```
 
-And with this in place, a call to mvn package will create your R library by adding files to your java source tree.
+And with this in place, a call to mvn package or mvn install will create your R library by adding files to your java source tree in the directory.
 Push your java source tree to github (Optional). 
 
-### run it:
+### run it from R:
 
 
 ```R
 library(devtools)
 # if you are using locally:
-# load_all("~/Git/your-project-id/")
+# load_all("~/Git/your-project-id/r-library")
 # OR if you pushed the project to github
-install_github("your-github-name/your-project-id")
+install_github("your-github-name/your-project-id",subdir="r-library")
 
 # a basic smoke test
 

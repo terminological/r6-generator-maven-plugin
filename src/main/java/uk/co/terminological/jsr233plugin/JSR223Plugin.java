@@ -52,6 +52,10 @@ public class JSR223Plugin extends AbstractMojo {
 	@Parameter(required=true)
 	private PackageData packageData;
 	
+	@Parameter(required=true)
+	private File outputDirectory;
+	
+	
 	public void execute() throws MojoExecutionException {
 		
 		// Assemble and build the jar for R
@@ -74,20 +78,21 @@ public class JSR223Plugin extends AbstractMojo {
 		// Copy the jar the a lib directory
 		String jarFile = mavenProject.getModel().getBuild().getFinalName()+"-jar-with-dependencies.jar";
 		File targetDir = new File(mavenProject.getModel().getBuild().getDirectory());
-		Path rootDir = mavenProject.getBasedir().toPath();
+		Path rootDir = outputDirectory.toPath();
 		Path jarLoc = rootDir.resolve("inst").resolve("java").resolve(jarFile);
 		
 		
 				
 		try {
 			
+			Files.createDirectories(rootDir);
+			Files.createDirectories(jarLoc.getParent());
+			
 			URI uri = JSR223Plugin.class.getResource("/groovy-all-2.4.17.jar").toURI();
 			
 			String[] array = uri.toString().split("!");
 			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), new HashMap<>());
 			Path groovyLoc =fs.getPath(array[1]);
-			
-			Files.createDirectories(jarLoc.getParent());
 			
 			Files.copy(
 					groovyLoc, 
@@ -109,7 +114,7 @@ public class JSR223Plugin extends AbstractMojo {
 			
 			RModelWriter writer = new RModelWriter(
 					model.get(), 
-					mavenProject.getBasedir(),
+					outputDirectory,
 					jarFile
 					);
 			writer.write();
