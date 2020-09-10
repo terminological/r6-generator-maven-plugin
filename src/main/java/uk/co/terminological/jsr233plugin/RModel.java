@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 import com.thoughtworks.qdox.model.DocletTag;
 
+import uk.co.terminological.jsr223.ROutput;
+
 public class RModel {
 
 	private List<Type> types = new ArrayList<>();
@@ -115,6 +117,10 @@ public class RModel {
 					&& supportedLengthOneOutputs.contains(genericTypes[1])
 				) return true;
 			}
+			if (
+					fqn.equals(ROutput.Dataframe.class.getCanonicalName()) ||
+					fqn.equals(ROutput.RowMajorDataframe.class.getCanonicalName())
+			) return true;
 		}
 		return false;
 	}

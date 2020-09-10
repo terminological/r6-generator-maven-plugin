@@ -5,7 +5,7 @@
 
 	<groupId>com.github.terminological</groupId>
 	<artifactId>r-jsr223-maven-plugin</artifactId>
-	<version>1.03</version>
+	<version>1.04</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>R JSR223 Maven Plugin</name>
@@ -38,7 +38,7 @@
 			<groupId>com.github.terminological</groupId>
 			<!-- <groupId>uk.co.terminological</groupId>-->
 			<artifactId>r-jsr223-runtime</artifactId>
-	    	<version>1.0</version>
+	    	<version>1.04</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
