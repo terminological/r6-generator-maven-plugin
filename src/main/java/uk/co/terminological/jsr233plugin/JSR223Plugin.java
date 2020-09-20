@@ -12,6 +12,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
@@ -20,7 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.maven.execution.MavenSession;
@@ -33,6 +36,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.wagon.Streams;
+
 
 /**
  */
@@ -88,18 +93,20 @@ public class JSR223Plugin extends AbstractMojo {
 			Files.createDirectories(rootDir);
 			Files.createDirectories(jarLoc.getParent());
 			
-			URI uri = JSR223Plugin.class.getResource("/groovy-all-2.4.17.jar").toURI();
-			
-			String[] array = uri.toString().split("!");
-			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), new HashMap<>());
-			Path groovyLoc =fs.getPath(array[1]);
-			
-			Files.copy(
-					groovyLoc, 
-					rootDir.resolve("inst").resolve("java").resolve("groovy-all-2.4.17.jar"),
-					StandardCopyOption.REPLACE_EXISTING);
-			
-			fs.close();
+			for (String fileName: Arrays.asList(
+					"groovy-all-2.4.17.jar", "slf4j-log4j12-1.7.22.jar", "log4j-1.2.17.jar", "slf4j-api-1.7.22.jar"
+					)) {
+				URI uri = JSR223Plugin.class.getResource("/"+fileName).toURI();
+				String[] array = uri.toString().split("!");
+				FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), new HashMap<>());
+				Path groovyLoc =fs.getPath(array[1]);
+				Files.copy(
+						groovyLoc, 
+						rootDir.resolve("inst").resolve("java").resolve(fileName),
+						StandardCopyOption.REPLACE_EXISTING);
+				
+				fs.close();
+			}
 			
 			Files.copy(
 					Paths.get(targetDir.getAbsolutePath(), jarFile), 

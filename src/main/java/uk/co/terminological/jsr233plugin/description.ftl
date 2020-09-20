@@ -14,7 +14,6 @@ Suggests:
 <#list model.getSuggests() as suggest>
 	${suggest}<#sep>,
 </#list>
-
 Imports:
 <#list model.getImports() as import>
 	${import},

@@ -38,15 +38,25 @@ public class RModel {
 			Short.class.getCanonicalName(), 
 			short.class.getCanonicalName(),
 			Long.class.getCanonicalName(), 
-			long.class.getCanonicalName()
+			long.class.getCanonicalName(),
+			ROutput.Dataframe.class.getCanonicalName(),
+			ROutput.ColMajorDataframe.class.getCanonicalName()
 	);
 	
 	private static List<String> supportedLengthOneInputs = Arrays.asList(
-			Double.class.getCanonicalName(), 
+			Double.class.getCanonicalName(),
 			Integer.class.getCanonicalName(), 
 			String.class.getCanonicalName(),
 			Boolean.class.getCanonicalName(), 
-			Byte.class.getCanonicalName()
+			Byte.class.getCanonicalName(),
+			double.class.getCanonicalName(),
+			int.class.getCanonicalName(), 
+			boolean.class.getCanonicalName(), 
+			byte.class.getCanonicalName(),
+			"double",
+			"int", 
+			"boolean", 
+			"byte"
 	);
 	private static List<String> supportedArrayInputs = Arrays.asList(
 			double.class.getCanonicalName(), 
@@ -57,7 +67,7 @@ public class RModel {
 	);
 	
 	public static boolean isSupportedInput(String fqn, boolean isArray, String[] genericTypes) {
-		return isSupportedInput(fqn,isArray, genericTypes,false); //defaults to colMajor
+		return isSupportedInput(fqn,isArray, genericTypes,true); //defaults to rowMajor
 	}
 	
 	public static boolean isSupportedInput(String fqn, boolean isArray, String[] genericTypes, boolean rowMajor) {
@@ -117,10 +127,6 @@ public class RModel {
 					&& supportedLengthOneOutputs.contains(genericTypes[1])
 				) return true;
 			}
-			if (
-					fqn.equals(ROutput.Dataframe.class.getCanonicalName()) ||
-					fqn.equals(ROutput.RowMajorDataframe.class.getCanonicalName())
-			) return true;
 		}
 		return false;
 	}
@@ -265,7 +271,10 @@ public class RModel {
 		public void setDescription(String string) {
 			this.description = string;
 		}
-		
+		public String explicitCast() {
+			if(this.returnType.contains("Dataframe")) return "(List<Map<String,Object>>)";
+			return("");
+		}
 		public String getParameterDescription(String paramName) {
 			if (this.getAnnotations().get("param") == null) return paramName;
 			String tmp = this.getAnnotations().get("param").stream()

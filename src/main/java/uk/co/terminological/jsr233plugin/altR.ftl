@@ -8,22 +8,49 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 	${class.getName()} = NULL,
 </#list>
   
+  	changeLogLevel = function(logLevel) {
+  	self$.engine$logLevel = logLevel;
+  	self$.engine %@% '
+  	  import org.apache.log4j.Logger;
+  	  import org.apache.log4j.Level;
+  		Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
+  	'
+	},
+	
  	#### constructor ----
- 	initialize = function() {
+ 	initialize = function(logLevel = "warn") {
 	
 	# initialise java engine
 	
 	class.path <- c(
 		system.file("java", "groovy-all-2.4.17.jar", package="${model.getConfig().getPackageName()}"),
+		system.file("java", "slf4j-log4j12-1.7.22.jar", package="${model.getConfig().getPackageName()}"),
+		system.file("java", "log4j-1.2.17.jar", package="${model.getConfig().getPackageName()}"),
+		system.file("java", "slf4j-api-1.7.22.jar", package="${model.getConfig().getPackageName()}"),
 		system.file("java", "${jarFileName}", package="${model.getConfig().getPackageName()}")
 	)	
 	self$.engine = jsr223::ScriptEngine$new("groovy", class.path)
-	self$.engine$setDataFrameRowMajor(FALSE)
+	self$.engine$setDataFrameRowMajor(TRUE)
+	self$.engine$setStringsAsFactors(FALSE)
+	self$.engine$logLevel = logLevel;
 	# set up engine
 	self$.engine %@% '
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+		import org.apache.log4j.BasicConfigurator;
+		import org.apache.log4j.Logger;
+		import org.apache.log4j.Level;
+		
+		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
+
+		log = LoggerFactory.getLogger("${model.getConfig().getPackageName()}");
+		log.info("logging initialised");
+
 		objs = [];
 		nextObjId = 0;
 	'
+	
 	
 	# initialise constructor and static class definitions
 <#list model.getClassTypes() as class>
@@ -150,7 +177,7 @@ ${class.getName()} = R6::R6Class("${class.getName()}", public=list(
 		<#else>
 		#execute call on instance .objId returning a result by value
 		out = self$.engine %~% '
-			return objs[tmp2_objId].${method.getName()}(${method.getParameterCsv("tmp_")});
+			return ${method.explicitCast()} objs[tmp2_objId].${method.getName()}(${method.getParameterCsv("tmp_")});
 		'
 		</#if>
 		# delete parameters
