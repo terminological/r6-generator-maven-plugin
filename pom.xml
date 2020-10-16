@@ -7,13 +7,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<rjsr223.version>native-rjava-SNAPSHOT</rjsr223.version>
+		<r6.version>master-SNAPSHOT</r6.version>
 	</properties>
 	
-<!-- 	<groupId>uk.co.terminological</groupId> -->
 	<groupId>com.github.terminological</groupId>
-	<artifactId>r-jsr223-maven-plugin</artifactId>
-	<version>${rjsr223.version}</version>
+	<artifactId>r6-generator-maven-plugin</artifactId>
+	<version>${r6.version}</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>R JSR223 Maven Plugin</name>
@@ -38,9 +37,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.terminological</groupId>
-<!-- 			<groupId>uk.co.terminological</groupId> -->
-			<artifactId>r-jsr223-runtime</artifactId>
-	    	<version>${rjsr223.version}</version>
+			<artifactId>r6-generator-runtime</artifactId>
+	    	<version>${r6.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -52,7 +50,6 @@
 			<artifactId>qdox</artifactId>
 			<version>2.0-M4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.dstovall/onejar-maven-plugin -->
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
