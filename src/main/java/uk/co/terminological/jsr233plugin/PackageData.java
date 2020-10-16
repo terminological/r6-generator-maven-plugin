@@ -1,9 +1,18 @@
 package uk.co.terminological.jsr233plugin;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
+
+
+/** Holds all the options for the maven plugin
+ * @author terminological
+ *
+ */
 public class PackageData {
 
 	@Parameter
@@ -33,7 +42,11 @@ public class PackageData {
 	@Parameter(required=true)
 	private String license;
 	
-
+	@Parameter(required=false)
+	private String[] rjavaOpts;
+	
+	@Parameter
+	private Boolean debug;
 	
 	public String getMaintainerName() {
 		return maintainerName;
@@ -45,6 +58,24 @@ public class PackageData {
 
 	public String getMaintainerEmail() {
 		return maintainerEmail;
+	}
+	
+	/** {@code <debugMode>true</debugMode>}
+	 * @return
+	 */
+	public boolean getDebugMode() {
+		return debug != null && debug; 
+	}
+	
+	public boolean hasRJavaOpts() {
+		return getRJavaOpts().isEmpty();
+	}
+	
+	/** For example {@code <rJavaOpts><rJavaOpt>-Xmx2048M</rJavaOpt></rJavaOpts>}
+	*/
+	public List<String> getRJavaOpts() {
+		if (this.rjavaOpts == null) return Collections.emptyList();
+		return Arrays.asList(this.rjavaOpts);
 	}
 
 	public void setMaintainerName(String maintainerName) {
@@ -59,8 +90,6 @@ public class PackageData {
 		this.maintainerEmail = maintainerEmail;
 	}
 
-	
-	
 	public String getDescription() {
 		return description;
 	}

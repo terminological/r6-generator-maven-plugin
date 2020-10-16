@@ -2,19 +2,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-<!-- 	<groupId>uk.co.terminological</groupId> -->
-	<groupId>com.github.terminological</groupId>
-	<artifactId>r-jsr223-maven-plugin</artifactId>
-	<version>1.05</version>
-	<packaging>maven-plugin</packaging>
-
-	<name>R JSR223 Maven Plugin</name>
-
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<rjsr223.version>native-rjava-SNAPSHOT</rjsr223.version>
 	</properties>
+	
+<!-- 	<groupId>uk.co.terminological</groupId> -->
+	<groupId>com.github.terminological</groupId>
+	<artifactId>r-jsr223-maven-plugin</artifactId>
+	<version>${rjsr223.version}</version>
+	<packaging>maven-plugin</packaging>
+
+	<name>R JSR223 Maven Plugin</name>
 
 	<dependencies>
 
@@ -38,7 +40,7 @@
 			<groupId>com.github.terminological</groupId>
 <!-- 			<groupId>uk.co.terminological</groupId> -->
 			<artifactId>r-jsr223-runtime</artifactId>
-	    	<version>1.05</version>
+	    	<version>${rjsr223.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -51,6 +53,11 @@
 			<version>2.0-M4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.dstovall/onejar-maven-plugin -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

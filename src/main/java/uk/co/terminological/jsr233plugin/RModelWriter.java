@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
@@ -22,18 +23,20 @@ public class RModelWriter {
 	private RModel model;
 	private File target;
 	private String jarFileName;
+	private Log log;
 
-	public RModelWriter(RModel model, File target, String jarFileName) {
+	public RModelWriter(RModel model, File target, String jarFileName, Log log) {
 		this.model = model;
 		this.target = target;
 		this.jarFileName = jarFileName;
+		this.log=log;
 	}
 
 	public void write() throws MojoExecutionException {
 
-		
-		if (target == null) throw new RuntimeException("No target directory has been set");
+		if (target == null) throw new MojoExecutionException("No target directory has been set");
 
+		// Freemarker stuff
 		cfg = new Configuration(Configuration.VERSION_2_3_25);
 		cfg.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_25).build());
 		cfg.setDefaultEncoding("UTF-8");
@@ -51,28 +54,19 @@ public class RModelWriter {
 		typeRoot.put("model", model);
 		typeRoot.put("jarFileName", jarFileName);
 	
-		//doGenerate(new File(target,"NAMESPACE"),getTemplate("/namespace.ftl"),typeRoot);
-		doGenerate(new File(target,"NAMESPACE"),getTemplate("/altNamespace.ftl"),typeRoot);
-		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/description.ftl"),typeRoot);
-		doGenerate(new File(manDir,"JavaApi.Rd"),getTemplate("/altJavaApiRd.ftl"),typeRoot);
-		//doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/man.ftl"),typeRoot);
-		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/altMan.ftl"),typeRoot);
-		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/altR.ftl"),typeRoot);
+		doGenerate(new File(target,"NAMESPACE"),getTemplate("/rjavaNamespace.ftl"),typeRoot);
+		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/rjavaDescription.ftl"),typeRoot);
+		doGenerate(new File(manDir,"JavaApi.Rd"),getTemplate("/rjavaApiRd.ftl"),typeRoot);
+		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/rjavaPackageRd.ftl"),typeRoot);
+		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/rjavaApiR.ftl"),typeRoot);
+		doGenerate(new File(rDir,"zzz.R"),getTemplate("/rjavaZzz.ftl"),typeRoot);
 		
-		for (RModel.Type type: model.getClassTypes()) {
+		for (RClass type: model.getClassTypes()) {
 			
 			typeRoot.put("class", type);
 			
-			//doGenerate(new File(rDir,"J"+type.getName()+".R"),getTemplate("/r.ftl"),typeRoot);
-			//doGenerate(new File(manDir,"J"+type.getName()+".Rd"),getTemplate("/rd.ftl"),typeRoot);
-			doGenerate(new File(manDir,type.getName()+".Rd"),getTemplate("/altRd.ftl"),typeRoot);
-			
-			/*for (RModel.Method method: type.getMethods()) {
-				
-				typeRoot.put("method", method);
-				doGenerate(new File(manDir,method.getName()+".Rd"),getTemplate("/man.ftl"),typeRoot);
-				
-			}*/
+			doGenerate(new File(manDir,type.getSimpleName()+".Rd"),getTemplate("/rjavaRd.ftl"),typeRoot);
+			doGenerate(new File(rDir,type.getSimpleName()+".R"),getTemplate("/rjavaClassR.ftl"),typeRoot);
 			
 		}
 		
@@ -85,7 +79,7 @@ public class RModelWriter {
 		} catch (IOException e) {
 			throw new MojoExecutionException("Couldn't load template "+name,e);
 		}
-		System.out.println("using template: "+name);
+		log.debug("Using freemarker template: "+name);
 		return tmp;
 	}
 
@@ -97,13 +91,13 @@ public class RModelWriter {
 			Writer out;
 
 			out = new PrintWriter(new FileOutputStream(file));
-			System.out.println("Writing file: "+file.getAbsolutePath());
+			log.info("Writing file: "+file.getAbsolutePath());
 			tmp.process(root, out);
 			out.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new MojoExecutionException("Couldn't write source file", e);
 			// this should not happen. 
 
 		} catch (TemplateException e) {

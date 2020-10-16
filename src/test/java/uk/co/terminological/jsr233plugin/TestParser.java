@@ -11,6 +11,7 @@ public class TestParser {
 
 	@Before
 	public void setUp() throws Exception {
+		
 	}
 
 	@Test
