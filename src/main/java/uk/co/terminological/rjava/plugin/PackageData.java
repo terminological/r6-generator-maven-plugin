@@ -1,6 +1,8 @@
-package uk.co.terminological.jsr233plugin;
+package uk.co.terminological.rjava.plugin;
 
 import java.io.File;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +67,10 @@ public class PackageData {
 	 */
 	public boolean getDebugMode() {
 		return debug != null && debug; 
+	}
+	
+	public String getYear() {
+		return Integer.toString(LocalDate.now().getYear());
 	}
 	
 	public boolean hasRJavaOpts() {

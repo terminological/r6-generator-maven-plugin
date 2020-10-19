@@ -1,4 +1,4 @@
-package uk.co.terminological.jsr233plugin;
+package uk.co.terminological.rjava.plugin;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.element;

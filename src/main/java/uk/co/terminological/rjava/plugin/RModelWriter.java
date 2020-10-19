@@ -1,4 +1,4 @@
-package uk.co.terminological.jsr233plugin;
+package uk.co.terminological.rjava.plugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +47,9 @@ public class RModelWriter {
 		File rDir = new File(target,"R");
 		rDir.mkdirs();
 		
+		File instDir = new File(target,"inst");
+		instDir.mkdirs();
+		
 		File manDir = new File(target,"man");
 		manDir.mkdirs();
 		
@@ -56,6 +59,7 @@ public class RModelWriter {
 	
 		doGenerate(new File(target,"NAMESPACE"),getTemplate("/rjavaNamespace.ftl"),typeRoot);
 		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/rjavaDescription.ftl"),typeRoot);
+		doGenerate(new File(instDir,"CITATION"),getTemplate("/rjavaCitation.ftl"),typeRoot);
 		doGenerate(new File(manDir,"JavaApi.Rd"),getTemplate("/rjavaApiRd.ftl"),typeRoot);
 		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/rjavaPackageRd.ftl"),typeRoot);
 		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/rjavaApiR.ftl"),typeRoot);

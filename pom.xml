@@ -15,7 +15,7 @@
 	<version>${r6.version}</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>R JSR223 Maven Plugin</name>
+	<name>R6 Generator Maven Plugin</name>
 
 	<dependencies>
 
@@ -92,5 +92,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

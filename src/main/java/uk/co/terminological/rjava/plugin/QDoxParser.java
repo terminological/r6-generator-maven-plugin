@@ -1,4 +1,4 @@
-package uk.co.terminological.jsr233plugin;
+package uk.co.terminological.rjava.plugin;
 
 
 import java.io.File;

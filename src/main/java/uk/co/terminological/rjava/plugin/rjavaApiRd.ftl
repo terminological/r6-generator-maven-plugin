@@ -61,7 +61,7 @@ J = JavaApi$new();
 		\describe{
 			\itemize{
 	<#list method.getParameterNames() as paramName>
-				\item{${method.getParameterDescription(paramName)}}{ - (java expects a ${method.getParameterType(paramName)})}
+				\item{${method.getParameterDescription(paramName)}}{ - (java expects a ${method.getParameterType(paramName).getSimpleName()})}
 	</#list>
 			}
 		}
@@ -72,7 +72,7 @@ J = JavaApi$new();
 	<#if method.isFactory()>
 		R6 ${method.getReturnType().getSimpleName()} object: ${method.getAnnotationValue("return")!}
 	<#else>
-		${method.getReturnType()}: ${method.getAnnotationValue("return")!}
+		${method.getReturnType().getSimpleName()}: ${method.getAnnotationValue("return")!}
 	</#if>
 	}
 

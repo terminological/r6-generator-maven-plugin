@@ -1,24 +1,29 @@
-# maven-r-jsr223-plugin
+# maven-r6-generator-plugin
 
-Maven plugin and annotation processor to write glue code to allow correctly annotated java class to be used as R function.
+Maven plugin and annotation processor to write glue code to allow correctly annotated java class to be used within R as an set of R6 classes.
 
 ## Rationale
 
 R can use RJava or jsr223 to communicate with java. R has a class system called R6.
 
-If you want to use a java libray in R there is potentially a lot of glue code, and R library specific packaging configuration required.
+If you want to use a java library in R there is potentially a lot of glue code needed, and R library specific packaging configuration required.
 
-However if you don't mind writing an API in Java you can generate all of this glue code using a few annotations and the normal javadoc annotations. This plugin aims to provide that glue code and write a fairly transparent connection between java code and R code, with a minimum of hard work.
+However if you don't mind writing an R-centric API in Java you can generate all of this glue code using a few java annotations and the normal javadoc annotations. This plugin aims to provide an annotation processor that writes that glue code and creates a fairly transparent connection between java code and R code, with a minimum of hard work. The focus of this is streamlining the creation of R libraries by Java developers, rather than allowing access to arbitrary Java code from R.
 
-The ultimate aim of this plugin to allow java developers to provide simple APIs for their libraries, package their library using maven, push it to github and for that to become seamlessly available as an R library.
+The ultimate aim of this plugin to allow java developers to provide simple APIs for their libraries, package their library using maven, push it to github and for that to become seamlessly available as an R library, with a minimal amount of fuss.
 
 ## Basic usage
 
 ### write a java api:
 
 ```Java
+package 
+
+import uk.co.terminological.rjava.RClass;
+import uk.co.terminological.rjava.RMethod;
+
 /**
- * A test of the jsr223 templating
+ * A test of the r6 templating
  * 
  * this is a details comment 
  * @author joe tester joe.tester@example.com ORCIDID
@@ -43,7 +48,7 @@ public class HelloWorld {
 
 Key points:
 * You can annotate multiple classes with @RClass.
-* Only public methods or constructors annotated with @RMethod will feature in the R library
+* Only public methods annotated with @RMethod will feature in the R library
 * you cannot overload methods or constructors. Only one method with a given name is supported, and only one annotated constructor.
 * static and non static java methods are supported.
 * Objects that can be translated into R are returned by value
@@ -55,6 +60,8 @@ Key points:
 Maven jitpack runtime and plugin repoistory
 
 ```XML
+
+...
 	<!-- Resolve runtime library on github -->
 	<repositories>
 		<repository>
@@ -62,7 +69,7 @@ Maven jitpack runtime and plugin repoistory
 		    <url>https://jitpack.io</url>
 		</repository>
 	</repositories>
-
+...
 	<!-- Resolve maven plugin on github -->
 	<pluginRepositories>
 		<pluginRepository>
@@ -70,17 +77,22 @@ Maven jitpack runtime and plugin repoistory
 		    <url>https://jitpack.io</url>
 		</pluginRepository>
 	</pluginRepositories>
-
+...
 ```
 
 Required Maven runtime dependency
 
 ```XML
 ...
+	<properties>
+		...
+		<r6.version>master-SNAPSHOT</r6.version>
+	</properties>
+...
 		<dependency>
 			<groupId>com.github.terminological</groupId>
-			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.02</version>
+			<artifactId>r6-generator-runtime</artifactId>
+			<version>${r6.version}</version>
 		</dependency>
 ...
 ```
@@ -94,8 +106,8 @@ Maven plugin example configuration - generates a R library into the directory "r
 			...
 			<plugin>
 				<groupId>com.github.terminological</groupId>
-				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.02</version>
+				<artifactId>r6-generator-maven-plugin</artifactId>
+				<version>${r6.version}</version>
 				<configuration>
 					<outputDirectory>${project.basedir}/r-library</outputDirectory>
 					<packageData>
@@ -103,6 +115,10 @@ Maven plugin example configuration - generates a R library into the directory "r
 						<version>0.01</version>
 						<packageName>myRpackage</packageName>
 						<license>MIT</license>
+						<debug>true</debug> <!-- enables remote dubugging -->
+						<rjavaOpts>
+							<rjavaOpt>-Xmx256M</rjavaOpt>
+						</rjavaOpts>
 						<description>An optional long description of the package</description>
 						<maintainerName>test forename</maintainerName>
 						<maintainerFamilyName>optional surname</maintainerFamilyName>
@@ -132,9 +148,9 @@ Push your java source tree to github (Optional).
 ```R
 library(devtools)
 # if you are using locally:
-# load_all("~/Git/your-project-id/r-library")
+load_all("~/Git/your-project-id/r-library")
 # OR if you pushed the project to github
-install_github("your-github-name/your-project-id",subdir="r-library")
+# install_github("your-github-name/your-project-id",subdir="r-library")
 
 # a basic smoke test
 
@@ -146,8 +162,9 @@ J$HelloWorld$greet()
 ?myRpackage::HelloWorld
 ```
 
+For more options about the : 
+https://github.com/terminological/r6-generator-runtime
 
-
-For a more complete working example see: 
-https://github.com/terminological/r-jsr223-maven-plugin-test
+For a more complete working example and further documentation see: 
+https://github.com/terminological/r6-generator-maven-plugin-test
 
