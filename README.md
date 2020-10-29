@@ -37,8 +37,8 @@ public class HelloWorld {
 	 * @return this java method returns a String
 	 */
 	@RMethod(examples = {
-					"An example",
-					"Spans many lines"
+					"message('An example')",
+					"message('Spans many lines')"
 	})
 	public static String greet() {
 		return "Hello R world. Love from Java."
@@ -155,7 +155,7 @@ load_all("~/Git/your-project-id/r-library")
 # a basic smoke test
 
 # the JavaApi class is the entry point for R to your Java code.
-J <- myRpackage::JavaApi$new()
+J <- myRpackage::JavaApi$get()
 
 # all the API classes and methods are classes attached to the J java api object
 J$HelloWorld$greet()

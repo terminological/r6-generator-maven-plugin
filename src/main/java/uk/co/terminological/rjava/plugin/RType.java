@@ -168,7 +168,7 @@ public class RType {
 	public static RType voidType(RModel model) {
 		return new RType(model, 
 				Arrays.asList("function(rObj) stop('no input expected')"), 
-				Arrays.asList("function(jObj) return(NULL)"),
+				Arrays.asList("function(jObj) invisible(NULL)"),
 				"V",
 				void.class);
 	}

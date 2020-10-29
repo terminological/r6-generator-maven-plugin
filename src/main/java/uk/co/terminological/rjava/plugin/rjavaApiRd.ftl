@@ -3,88 +3,98 @@
 \name{JavaApi}
 
 \alias{JavaApi}
+<#-- \alias{\S4method{get}{JavaApi}} -->
 
 \title{${model.getConfig().getTitle()}}
 
-\usage{\preformatted{
-library(${model.getConfig().getPackageName()})
-J = JavaApi$new();
-}}
+\section{Usage}{
+	\if{html}{\out{<div class="r">}}
+	\preformatted{
+ J = ${model.getConfig().getPackageName()}::JavaApi$get(logLevel)
+ 	}
+  \if{html}{\out{</div>}}
+}
+
+\arguments{
+	\if{html}{\out{<div class="arguments">}}
+	\item{logLevel}{optional - the slf4j log level as a string - one of OFF (most specific, no logging), 
+	FATAL (most specific, little data), ERROR, WARN, INFO, DEBUG, 
+	TRACE (least specific, a lot of data), ALL (least specific, all data)}
+	\if{html}{\out{</div>}}
+}
 
 \description{
-	${model.getConfig().getDescription()}
+${model.getConfig().getDescription()}
+
+Version: ${model.getConfig().getVersion()}
+
+Generated: ${model.getConfig().getDate()}
 }
+
+\author{\email{${model.getConfig().getMaintainerEmail()}}}
 
 \keyword{java api}
 
-\section{Methods}{
-	\subsection{Public methods}{
-		\itemize{
-			\item \code{JavaApi$new()}
+\section{Static methods and constructors}{
+	\itemize{
+		\item \code{JavaApi$get()}
 <#list model.getClassTypes() as class>
-	\item \href{#method-${class.getSimpleName()}-new}{\code{J$${class.getSimpleName()}$new(${class.getConstructor().getParameterCsv()})}}
+		\item \href{#method-${class.getSimpleName()}-new}{\code{J$${class.getSimpleName()}$new(${class.getConstructor().getParameterCsv()})}}
 	<#list class.getStaticMethods() as method>
-			\item \href{#method-${class.getSimpleName()}-${method.getName()}}{\code{J$${class.getSimpleName()}$${method.getName()}(${method.getParameterCsv()})}}
+		\item \href{#method-${class.getSimpleName()}-${method.getName()}}{\code{J$${class.getSimpleName()}$${method.getName()}(${method.getParameterCsv()})}}
 	</#list>
 </#list>
-		}
 	}
+	
 
 <#list model.getClassTypes() as class>
 <#list class.getConstructorsAndStaticMethods() as method>
 	\if{html}{\out{<hr>}}
-	\if{html}{\out{<a id="method-${method.getName()}"></a>}}
+	\if{html}{\out{<a id="method-${class.getSimpleName()}-${method.getName()}"></a>}}
 	
 	\subsection{Method \code{${class.getSimpleName()}$${method.getName()}()}}{
 		${method.getDescription()}
-	}
-
-	\subsection{Usage}{
-		\if{html}{\out{<div class="r">}}
-		\preformatted{
-	<#if method.isStatic()>
-  library(${model.getConfig().getPackageName()})
-  J <- JavaApi$new()
-  J$${class.getSimpleName()}$${method.getName()}(${method.getParameterCsv()})
-	<#else>
-  library(${model.getConfig().getPackageName()})
-  J <- JavaApi$new()
-  instance <- J$${class.getSimpleName()}$new(...);
-  instance$${method.getName()}(<#list method.getParameterNames() as paramName>${paramName}<#sep>, </#list>)
-  	</#if>
-		}
-		\if{html}{\out{</div>}}
-	}
 	
-	\subsection{Arguments}{
-		\if{html}{\out{<div class="arguments">}}
-		\describe{
-			\itemize{
-	<#list method.getParameterNames() as paramName>
-				\item{${method.getParameterDescription(paramName)}}{ - (java expects a ${method.getParameterType(paramName).getSimpleName()})}
-	</#list>
-			}
-		}
-		\if{html}{\out{</div>}}
-	}
-
-	\subsection{Returns}{
-	<#if method.isFactory()>
-		R6 ${method.getReturnType().getSimpleName()} object: ${method.getAnnotationValue("return")!}
+		\subsection{Usage}{
+			\if{html}{\out{<div class="r">}}
+			\preformatted{
+	<#if method.isStatic()>
+J = ${model.getConfig().getPackageName()}::JavaApi$get()
+J$${class.getSimpleName()}$${method.getName()}(${method.getParameterCsv()})
 	<#else>
-		${method.getReturnType().getSimpleName()}: ${method.getAnnotationValue("return")!}
+J = ${model.getConfig().getPackageName()}::JavaApi$get()
+instance = J$${class.getSimpleName()}$new(...);
+instance$${method.getName()}(<#list method.getParameterNames() as paramName>${paramName}<#sep>, </#list>)
+  	</#if>
+	  		}
+			\if{html}{\out{</div>}}
+		}
+	
+		\subsection{Arguments}{
+			\if{html}{\out{<div class="arguments">}}
+			\describe{
+				\itemize{
+	<#if !method.getParameterNames()?has_content>
+					\item{none}
+	<#else>
+		<#list method.getParameterNames() as paramName>
+					\item{${method.getParameterDescription(paramName)}}{ - (java expects a ${method.getParameterType(paramName).getSimpleName()})}
+		</#list>
 	</#if>
+				}
+			}
+			\if{html}{\out{</div>}}
+		}
+
+		\subsection{Returns}{
+	<#if method.isFactory()>
+			R6 ${method.getReturnType().getSimpleName()} object: ${method.getAnnotationValue("return")!}
+	<#else>
+			${method.getReturnType().getSimpleName()}: ${method.getAnnotationValue("return")!}
+	</#if>
+		}
 	}
 
-	\subsection{Examples}{
-		\if{html}{\out{<div class="r example copy">}}
-		\preformatted{
-	<#list method.getAnnotationList("examples") as example>
-  ${example}
-	</#list>
-		}
-		\if{html}{\out{</div>}}
-	}
 </#list>
 </#list>
 }

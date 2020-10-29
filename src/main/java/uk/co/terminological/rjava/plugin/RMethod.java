@@ -42,7 +42,7 @@ public class RMethod extends RAnnotated {
 				.anyMatch(s2 -> s2.getCanonicalName().equals(this.getReturnType().getCanonicalName()));
 	}
 	public String getDescription() {
-		return description;
+		return description == null || description.isEmpty() ? "no description" : description;
 	}
 	public String getParameterDescription(String paramName) {
 		if (this.getAnnotations().get("param") == null) return paramName;

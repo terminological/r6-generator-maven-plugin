@@ -38,10 +38,10 @@ public class RClass extends RAnnotated {
 	}
 	
 	public String getDetails() {
-		return details;
+		return details == null || details.isEmpty() ? "no details" : details;
 	}
 	public String getDescription() {
-		return description;
+		return description == null || description.isEmpty() ? "missing description" : description;
 	}
 	public String[] getAuthor() {
 		if (this.getAnnotationValue("author").isEmpty()) return new String[] {};

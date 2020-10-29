@@ -6,7 +6,6 @@
 </#list>
 \title{${method.getValue("title")}}
 \usage{
-  library(${model.getConfig().getPackageName()})
   J${class.getSimpleName()}$${method.getName()}(<#list method.getParameterNames() as paramName>${paramName}<#sep>, </#list>)
 }
 \arguments{
@@ -17,7 +16,7 @@
 \description{
 ${method.getValue("description")!}
 }
-\examples{
+\examples{\dontrun{
 <#list method.getList("examples") as example>
 ${example}
 </#list>
@@ -28,5 +27,6 @@ ${example}
 	<#else>
 		${method.getReturnType()}: ${method.getValue("return")!}
 	</#if>
+}
 }
 \keyword{java api}

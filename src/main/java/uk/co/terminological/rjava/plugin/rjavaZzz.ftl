@@ -8,21 +8,4 @@
 	# add in specific java options from the maven file
 	options(java.parameters = c(getOption("java.parameters"),"<#list model.getConfig().getRJavaOpts() as jopt>${jopt}<#sep>", "</#list>"))
 	</#if>
-	<#if model.getConfig().getDebugMode()>
-	# pass in debug options
-	.jinit(parameters=c(getOption("java.parameters"),"-Xdebug","-Xrunjdwp:transport=dt_socket,address=8998,server=y,suspend=n"), silent = FALSE, force.init = TRUE)
-	message("java debugging initialised on port 8998")
-	<#else>
-	if (!.jniInitialized) 
-        .jinit(parameters=getOption("java.parameters"),silent = TRUE, force.init = FALSE)
-	</#if>
-	
-	# add in all the jars that come with the library
-    classes <- system.file("java", package = pkgname, lib.loc = libname)
-    if (nchar(classes)) {
-        .jaddClassPath(classes)
-        jars <- grep(".*\\.jar", list.files(classes, full.names = TRUE), TRUE, value = TRUE)
-        message(paste0("Adding to classpath: ",jars,collapse='\n'))
-        .jaddClassPath(jars)
-    }
 }

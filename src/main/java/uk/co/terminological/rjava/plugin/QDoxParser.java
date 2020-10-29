@@ -269,10 +269,12 @@ public class QDoxParser {
 		else if (hasAnnotation(uk.co.terminological.rjava.RClass.class, (JavaAnnotatedElement) type)) {
 			
 			String jni = "L"+type.getCanonicalName().replace(".", "/")+";";
-			// These are passed by RJava to R as a jobj ref
-			// They can be manipulated by RJava and passed back in to java as a jobj
+			// These are passed by RJava to R as a jobj ref which is wrapped in the 
+			// R6 marshalling logic
+			// They can be manipulated by R and passed back in to java as a robj which needs
+			// unwrapping before being presented
 			String[] j2r = {"function(jObj) return(jObj)"};
-			String[] r2j = {"function(rObj) return(rObj)"};
+			String[] r2j = {"function(rObj) return(rObj$.jobj)"};
 			return new RType(model,Arrays.asList(r2j),Arrays.asList(j2r),jni,type, ((DefaultJavaClass) type).getName());
 		
 		}

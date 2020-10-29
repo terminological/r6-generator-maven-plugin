@@ -8,4 +8,3 @@ export(${class.getSimpleName()})
 import(${import})
 </#list>
 import(rJava)
-import(magrittr)

@@ -1,8 +1,8 @@
 package uk.co.terminological.rjava.plugin;
 
 import java.io.File;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +35,15 @@ public class PackageData {
 	@Parameter(defaultValue="",required=true)
 	private String maintainerFamilyName;
 	
+	@Parameter(defaultValue="Unknown",required=true)
+	private String maintainerOrganisation;
+	
 	@Parameter(required=true)
 	private String maintainerEmail;
 	
-	@Parameter(defaultValue="",required=true)
+	//TODO: ORCID ID
+	
+	@Parameter(required=true)
 	private String description;
 	
 	@Parameter(required=true)
@@ -50,6 +55,12 @@ public class PackageData {
 	@Parameter
 	private Boolean debug;
 	
+	@Parameter
+	private Boolean usePkgdown;
+	
+	@Parameter
+	private Boolean useJavadoc;
+	
 	public String getMaintainerName() {
 		return maintainerName;
 	}
@@ -58,6 +69,10 @@ public class PackageData {
 		return maintainerFamilyName;
 	}
 
+	public String getMaintainerOrganisation() {
+		return maintainerOrganisation;
+	}
+	
 	public String getMaintainerEmail() {
 		return maintainerEmail;
 	}
@@ -66,11 +81,39 @@ public class PackageData {
 	 * @return
 	 */
 	public boolean getDebugMode() {
-		return debug != null && debug; 
+		return debug != null && debug.booleanValue(); 
+	}
+	
+	/** {@code <usePkgdown>true</usePkgdown>}
+	 * 
+	 * build machine must have R and pkgdown installed
+	 * @return
+	 */
+	public boolean usePkgdown() {
+		return usePkgdown != null && usePkgdown.booleanValue(); 
+	}
+	
+	/** {@code <useJavadoc>true</useJavadoc>}
+	 * 
+	 * build machine must have R and pkgdown installed
+	 * @return
+	 */
+	public boolean useJavadoc() {
+		return useJavadoc != null && useJavadoc.booleanValue(); 
+	}
+	
+	public boolean needsLicense() {
+		return Arrays.asList(
+				"MIT","BSD_2_clause","BSD_3_clause"
+		).contains(license);
 	}
 	
 	public String getYear() {
 		return Integer.toString(LocalDate.now().getYear());
+	}
+	
+	public String getDate() {
+		return LocalDateTime.now().toString();
 	}
 	
 	public boolean hasRJavaOpts() {
@@ -101,7 +144,7 @@ public class PackageData {
 	}
 
 	public String getLicense() {
-		return license;
+		return license + (needsLicense() ? " + file LICENSE" : "");
 	}
 
 	public void setDescription(String description) {

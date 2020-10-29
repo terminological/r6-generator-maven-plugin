@@ -11,7 +11,7 @@ License: ${model.getConfig().getLicense()!}
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-<#list model.getSuggests() as suggest>	${suggest}<#sep>,${"\n"}</#list>
+<#list model.getSuggests() as suggest>	${suggest},${"\n"}</#list>	tibble
 Imports:
 <#list model.getImports() as import>	${import},${"\n"}</#list>	rJava,
 	R6,
