@@ -14,19 +14,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,14 +27,12 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.wagon.Streams;
 
 
 /**
@@ -192,7 +183,9 @@ public class R6GeneratorPlugin extends AbstractMojo {
 				throw new MojoExecutionException("Failed to execute pkgdown", e);
 			}
 		}
+	
 		
+    
 		if (packageData.useJavadoc() && !packageData.getDebugMode()) {
 			getLog().info("Generating javadocs");
 			executeMojo(
@@ -203,7 +196,8 @@ public class R6GeneratorPlugin extends AbstractMojo {
 					goal("javadoc"),
 					configuration(
 							element(name("reportOutputDirectory"),docs.toString()),
-							element(name("destDir"),"javadoc")
+							element(name("destDir"),"javadoc"),
+							element(name("javadocExecutable"),packageData.getJavadocExecutable())
 					),
 					executionEnvironment(
 							mavenProject,

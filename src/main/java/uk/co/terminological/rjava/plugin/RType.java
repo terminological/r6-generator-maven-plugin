@@ -93,7 +93,9 @@ public class RType {
 		
 		aliases.put("~RDATAFRAME~", jni(RDataframe.class));
 		aliases.put("~RVECTOR~", jni(RVector.class));
-		aliases.put("~RMATRIX~", jni(RMatrix.class));
+		
+		aliases.put("~RNUMERICARRAY~", jni(RNumericArray.class));
+		
 		aliases.put("~RLIST~", jni(RList.class));
 		aliases.put("~RNAMEDLIST~", jni(RNamedList.class));
 		
@@ -116,7 +118,7 @@ public class RType {
 		aliases.put("~TO_RNAMEDLIST~", conv(RNamedList.class));
 		aliases.put("~TO_RNULL~", conv(RNull.class));
 		
-		aliases.put("~TO_RMATRIX~", conv(RMatrix.class));
+		aliases.put("~TO_RNUMERICARRAY~", conv(RNumericArray.class));
 		
 	}
 	

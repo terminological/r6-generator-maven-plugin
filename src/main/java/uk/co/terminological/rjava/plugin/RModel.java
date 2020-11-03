@@ -56,8 +56,9 @@ public class RModel {
 		tmp.add(new String[] {
 				getConfig().getMaintainerName(),
 				getConfig().getMaintainerFamilyName(),
-				getConfig().getMaintainerEmail()});
-		tmp.add(new String[] {"r-jsr223-maven-plugin","terminological"});
+				getConfig().getMaintainerEmail(),
+				getConfig().getMaintainerORCID()
+		});
 		tmp.addAll(this.getClassTypes().stream().map(t -> t.getAuthor()).filter(a -> (
 				a != null && a.length > 0
 		)).collect(Collectors.toSet()));

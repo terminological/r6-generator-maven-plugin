@@ -41,7 +41,8 @@ public class PackageData {
 	@Parameter(required=true)
 	private String maintainerEmail;
 	
-	//TODO: ORCID ID
+	@Parameter()
+	private String maintainerORCID;
 	
 	@Parameter(required=true)
 	private String description;
@@ -61,6 +62,9 @@ public class PackageData {
 	@Parameter
 	private Boolean useJavadoc;
 	
+	@Parameter(defaultValue="${java.home}/bin/javadoc")
+	private String javadocExecutable;
+	
 	public String getMaintainerName() {
 		return maintainerName;
 	}
@@ -75,6 +79,10 @@ public class PackageData {
 	
 	public String getMaintainerEmail() {
 		return maintainerEmail;
+	}
+	
+	public String getMaintainerORCID() {
+		return maintainerORCID;
 	}
 	
 	/** {@code <debugMode>true</debugMode>}
@@ -100,6 +108,10 @@ public class PackageData {
 	 */
 	public boolean useJavadoc() {
 		return useJavadoc != null && useJavadoc.booleanValue(); 
+	}
+	
+	public String getJavadocExecutable() {
+		return this.javadocExecutable;
 	}
 	
 	public boolean needsLicense() {
