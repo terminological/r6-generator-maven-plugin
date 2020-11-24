@@ -129,7 +129,7 @@ public class PackageData {
 	}
 	
 	public boolean hasRJavaOpts() {
-		return getRJavaOpts().isEmpty();
+		return !getRJavaOpts().isEmpty();
 	}
 	
 	/** For example {@code <rJavaOpts><rJavaOpt>-Xmx2048M</rJavaOpt></rJavaOpts>}

@@ -197,7 +197,11 @@ public class R6GeneratorPlugin extends AbstractMojo {
 					configuration(
 							element(name("reportOutputDirectory"),docs.toString()),
 							element(name("destDir"),"javadoc"),
-							element(name("javadocExecutable"),packageData.getJavadocExecutable())
+							element(name("javadocExecutable"),packageData.getJavadocExecutable()),
+							element(name("additionalOptions"),
+									element(name("additionalOption"),"-header '<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\"></script>'"),
+									element(name("additionalOption"),"--allow-script-in-comments")),
+							element(name("failOnError"),"false")
 					),
 					executionEnvironment(
 							mavenProject,
