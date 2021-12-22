@@ -2,7 +2,6 @@ package uk.co.terminological.rjava.plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map.Entry;
 
 import com.thoughtworks.qdox.model.JavaType;
 
-import uk.co.terminological.rjava.RDataType;
+
 import uk.co.terminological.rjava.types.*;
 
 /** This is used for parameters and for return types.
@@ -90,6 +89,8 @@ public class RType {
 		aliases.put("~RINTEGERVECTOR~", jni(RIntegerVector.class));
 		aliases.put("~RDATE~", jni(RDate.class));
 		aliases.put("~RDATEVECTOR~", jni(RDateVector.class));
+		aliases.put("~RUNTYPEDNA~", jni(RUntypedNa.class));
+		aliases.put("~RUNTYPEDNAVECTOR~", jni(RUntypedNaVector.class));
 		
 		aliases.put("~RDATAFRAME~", jni(RDataframe.class));
 		aliases.put("~RVECTOR~", jni(RVector.class));
@@ -105,6 +106,7 @@ public class RType {
 		aliases.put("~TO_RLOGICALVECTOR~", conv(RLogicalVector.class));
 		aliases.put("~TO_RINTEGERVECTOR~", conv(RIntegerVector.class));
 		aliases.put("~TO_RDATEVECTOR~", conv(RDateVector.class));
+		aliases.put("~TO_RUNTYPEDNAVECTOR~", conv(RUntypedNaVector.class));
 		
 		aliases.put("~TO_RCHARACTER~", conv(RCharacter.class));
 		aliases.put("~TO_RNUMERIC~", conv(RNumeric.class));
@@ -112,6 +114,7 @@ public class RType {
 		aliases.put("~TO_RLOGICAL~", conv(RLogical.class));
 		aliases.put("~TO_RINTEGER~", conv(RInteger.class));
 		aliases.put("~TO_RDATE~", conv(RDate.class));
+		aliases.put("~TO_RUNTYPEDNA~", conv(RUntypedNa.class));
 		
 		aliases.put("~TO_RDATAFRAME~", conv(RDataframe.class));
 		aliases.put("~TO_RLIST~", conv(RList.class));
