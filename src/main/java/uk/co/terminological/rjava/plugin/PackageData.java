@@ -60,6 +60,9 @@ public class PackageData {
 	private Boolean usePkgdown;
 	
 	@Parameter
+	private Boolean useRoxygen2;
+	
+	@Parameter
 	private Boolean useJavadoc;
 	
 	@Parameter(defaultValue="${java.home}/bin/javadoc")
@@ -100,6 +103,16 @@ public class PackageData {
 	public boolean usePkgdown() {
 		return usePkgdown != null && usePkgdown.booleanValue(); 
 	}
+	
+	/** {@code <usePkgdown>true</usePkgdown>}
+	 * 
+	 * build machine must have R and devtools installed
+	 * @return
+	 */
+	public boolean useRoxygen2() {
+		return useRoxygen2 != null && useRoxygen2.booleanValue(); 
+	}
+	
 	
 	/** {@code <useJavadoc>true</useJavadoc>}
 	 * 
@@ -152,7 +165,7 @@ public class PackageData {
 	}
 
 	public String getDescription() {
-		return description;
+		return description.replaceAll("\\s+", " ");
 	}
 
 	public String getLicense() {

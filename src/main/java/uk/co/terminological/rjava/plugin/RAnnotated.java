@@ -100,4 +100,12 @@ public class RAnnotated {
 		return (((RAnnotated) other).type.equals(type));
 	}
 	
+	public String doxygen(String s) {
+		if(s == null) return null;
+		return "\t#' "+s.replaceAll("\\n", "\n\t#' ").trim();
+	}
+	public String doxygen(String field, String s) {
+		if(s == null) return null;
+		return "\t#' "+field+" "+s.replaceAll("\\n", "\n\t#' ").trim();
+	}
 }
