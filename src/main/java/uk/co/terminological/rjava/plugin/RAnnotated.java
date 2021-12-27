@@ -106,6 +106,6 @@ public class RAnnotated {
 	}
 	public String doxygen(String field, String s) {
 		if(s == null) return null;
-		return "\t#' "+field+" "+s.replaceAll("\\n", "\n\t#' ").trim();
+		return "\t#' @"+field+" "+s.replaceAll("\\n", "\n\t#' ").trim();
 	}
 }

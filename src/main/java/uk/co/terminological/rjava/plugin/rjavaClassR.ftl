@@ -49,7 +49,7 @@ ${class.getSimpleName()} = R6::R6Class("${class.getSimpleName()}", public=list(
 ${method.doxygen(method.getName())}: 
 ${method.doxygen(method.getDescription())}
 		<#list method.getParameterNames() as param>
-	#' @param ${method.getParameterDescription(param)} - (java expects a ${method.getParameterType(param).getSimpleName()})
+${method.doxygen("param",method.getParameterDescription(param))} - (java expects a ${method.getParameterType(param).getSimpleName()})
 		</#list>
 		<#if method.isFactory()>
 	#' @return R6 ${method.getReturnType().getSimpleName()} object: 
