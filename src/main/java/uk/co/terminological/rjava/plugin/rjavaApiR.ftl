@@ -111,12 +111,13 @@ JavaApi = R6::R6Class("JavaApi", public=list(
  	
  		.jcall("uk/co/terminological/rjava/LogController", returnSig = "V", method = "setupRConsole")
  		.jcall("uk/co/terminological/rjava/LogController", returnSig = "V", method = "configureLog" , logLevel)
- 		buildDate = .jcall"uk/co/terminological/rjava/LogController", returnSig = "S", method = "getClassBuildTime")
+ 		# TODO: this is the library build date code byut it requires testing
+ 		# buildDate = .jcall("uk/co/terminological/rjava/LogController", returnSig = "S", method = "getClassBuildTime")
     	self$.log = .jcall("org/slf4j/LoggerFactory", returnSig = "Lorg/slf4j/Logger;", method = "getLogger", "${model.getConfig().getPackageName()}");
     	.jcall(self$.log,returnSig = "V",method = "info","Initialised ${model.getConfig().getPackageName()}");
 		.jcall(self$.log,returnSig = "V",method = "debug","Version: ${model.getConfig().getVersion()}");
 		.jcall(self$.log,returnSig = "V",method = "debug","R package generated: ${model.getConfig().getDate()}");
-		.jcall(self$.log,returnSig = "V",method = "debug",paste0("Java library compiled: ",buildDate));
+		# .jcall(self$.log,returnSig = "V",method = "debug",paste0("Java library compiled: ",buildDate));
 		.jcall(self$.log,returnSig = "V",method = "debug","Contact: ${model.getConfig().getMaintainerEmail()}");
 		self$printMessages()
 		# initialise type conversion functions
