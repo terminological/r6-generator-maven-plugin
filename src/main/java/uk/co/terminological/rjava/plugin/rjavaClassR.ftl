@@ -34,7 +34,7 @@ ${class.getSimpleName()} = R6::R6Class("${class.getSimpleName()}", public=list(
 	#' @examples
 	#' J = ${model.getConfig().getPackageName()}::JavaApi$get();
 	<#assign method=class.getConstructor()>
-	#' instance = J$${class.getSimpleName()}$${method.getName()}(${method.getParameterCsv()})
+	#' instance = J$${class.getSimpleName()}$${method.getName()}(${method.getFunctionParameterCsv()})
 	initialize = function(jobj,api){
 		self$.jobj = jobj;
 		self$.api = api;
@@ -66,7 +66,7 @@ ${method.doxygen(example)}
 			</#list>
 	#' }
 		</#if>
-	${method.getName()} = function(${method.getParameterCsv()}) {
+	${method.getName()} = function(${method.getFunctionParameterCsv()}) {
 		# copy parameters
 		<#list method.getParameterNames() as param>
 		tmp_${param} = self$.api$.toJava$${method.getParameterType(param).getSimpleName()}(${param});

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
@@ -218,7 +219,8 @@ public class QDoxParser {
 			out.setReturnType( getOrCreateType(m.getReturns(), model));
 			m.getTags().forEach(dt -> out.mergeAnnotations(dt.getName(),dt.getValue()));		
 			for (JavaParameter jp : m.getParameters()) {
-				out.addParameter(jp.getName(), getOrCreateType(jp.getType(), model));
+				String defaultValue = getAnnotation(uk.co.terminological.rjava.RDefault.class, jp).map(a -> a.getNamedParameter("rCode").toString()).orElse(null);
+				out.addParameter(jp.getName(), getOrCreateType(jp.getType(), model), defaultValue);
 			}
 			return out;
 		} catch (MojoExecutionException e) {
@@ -337,7 +339,8 @@ public class QDoxParser {
 		RMethod out = new RMethod(model, annotationMap,"new",description,true);
 		m.getTags().forEach(dt -> out.mergeAnnotations(dt.getName(), dt.getValue()));
 		for (JavaParameter jp: m.getParameters()) {
-			out.addParameter(jp.getName(), model.getRTypeOrThrowError(jp.getType()));
+			String defaultValue = getAnnotation(uk.co.terminological.rjava.RDefault.class, jp).map(a -> a.getNamedParameter("rCode").toString()).orElse(null);
+			out.addParameter(jp.getName(), model.getRTypeOrThrowError(jp.getType()),defaultValue);
 		}
 		out.setReturnType(model.getRTypeOrThrowError(m.getDeclaringClass()));
 		return out;
