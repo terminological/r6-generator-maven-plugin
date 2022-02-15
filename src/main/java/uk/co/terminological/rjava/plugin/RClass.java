@@ -14,6 +14,7 @@ public class RClass extends RAnnotated {
 	private String details;
 	private RMethod constructor;
 	private RModel model;
+	private String finalizer;
 	
 	public RClass(RModel model, Map<String,Object> annotations, JavaType type, String name, int dimensions, String description, String details) {
 		super(model,annotations,type,name);
@@ -76,5 +77,15 @@ public class RClass extends RAnnotated {
 		return model;
 	}
 
+	public void addFinalizer(String name) {
+		this.finalizer = name;		
+	}
+
+	public String getFinalizer() {
+		return this.finalizer;		
+	}
 	
+	public boolean hasFinalizer() {
+		return (this.finalizer != null);
+	}
 }

@@ -116,6 +116,7 @@ ${method.doxygen(example)}
 	
 	#' @description Allow this object to be garbage collected.
 	finalize = function() {
+		<#if class.hasFinalizer()>try(.jcall(self$.jobj, returnSig = "V", method="${class.getFinalizer()}"))</#if>
 		self$.jobj = .jnull("${class.getJNIName()}")
 		self$.jobj = NULL
 		.jgc(R.gc = FALSE)

@@ -194,6 +194,19 @@ public class QDoxParser {
 				}
 			}
 			
+			//Identify methods
+			for (JavaMethod m: clazz.getMethods(true)) {
+				boolean foundAlready = false;
+				if (m.isPublic() && hasAnnotation(uk.co.terminological.rjava.RFinalize.class,m)) {
+					if(!m.getReturnType().equals(JavaType.VOID)) 
+						throw new MojoExecutionException("Finalizers methods mut be void: "+clazz.getCanonicalName());
+					if(foundAlready)
+						throw new MojoExecutionException("Only one method can be a finalizers: "+clazz.getCanonicalName());
+					out.addFinalizer(m.getName());
+					foundAlready = true;
+				}
+			}
+			
 			return out;
 		} catch (MojoExecutionException e) {
 			log.error("Error in: "+clazz.getCanonicalName());
