@@ -139,7 +139,7 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 <#list model.getClassTypes() as class>
 		self$${class.getSimpleName()} = list(
 	<#assign method=class.getConstructor()>
-			new = function(${method.getParameterCsv()}) {
+			new = function(${method.getFunctionParameterCsv()}) {
 				# constructor
 				# convert parameters to java
 	<#list method.getParameterNames() as param>
@@ -156,7 +156,7 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 				return(tmp_r6)
 			}<#if (class.hasStaticMethods())>,</#if>
 	<#list class.getStaticMethods() as method>
-			${method.getName()} = function(${method.getParameterCsv()}) {
+			${method.getName()} = function(${method.getFunctionParameterCsv()}) {
 				# copy parameters
 			<#list method.getParameterNames() as param>
 				tmp_${param} = self$.toJava$${method.getParameterType(param).getSimpleName()}(${param});

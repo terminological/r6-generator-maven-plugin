@@ -77,7 +77,7 @@ public class RMethod extends RAnnotated {
 	public String getFunctionParameterCsv() {
 		return defaults.entrySet().stream()
 				.map(kv -> kv.getKey() + (kv.getValue() != null ? "="+
-						(StringEscapeUtils.unescapeJava(kv.getValue()).replaceAll("^\"|\"$", "")) : ""))
+						(StringEscapeUtils.unescapeJava(kv.getValue()).replaceAll("^\\s*\"|\"\\s*$", "")) : ""))
 				.collect(Collectors.joining(", "));
 	}
 	
