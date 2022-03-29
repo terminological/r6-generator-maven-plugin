@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,5 +23,13 @@ public class TestParser {
 		System.out.println(test.getClass().getCanonicalName());
 		System.out.println(test.getClass().getTypeParameters()[0].getGenericDeclaration());
 	}
+	
+	@Test
+	public final void testRegex() {
+		System.out.print(
+				StringEscapeUtils.unescapeJava("'hello world'").replaceAll("^\\s*\"|\"\\s*$", "")
+				);
+	}
+	
 
 }
