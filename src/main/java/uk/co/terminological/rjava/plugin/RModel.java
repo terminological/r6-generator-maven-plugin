@@ -20,6 +20,7 @@ public class RModel {
 	Map<String,RType> datatypes = new HashMap<>();
 	private PackageData config;
 	private QDoxParser parser;
+	private Collection<String> additionalExports;
 
 	public Optional<JavaClass> javaClassFor(Class<?> clazz) {
 		return parser.javaClassFor(clazz);
@@ -30,8 +31,20 @@ public class RModel {
 		this.parser = parser;
 	}
 
+	public RModel withAdditionalExports(Collection<String> exports) {
+		this.additionalExports = exports;
+		return this;
+	}
+	
 	public List<RClass> getClassTypes() {
 		return types;
+	}
+	
+	public Set<String> getExports() {
+		Set<String> out = getClassTypes().stream().map(c -> c.getSimpleName())
+			.collect(Collectors.toSet());
+		out.addAll(additionalExports);
+		return out;
 	}
 	
 	public Set<String> getImports() {

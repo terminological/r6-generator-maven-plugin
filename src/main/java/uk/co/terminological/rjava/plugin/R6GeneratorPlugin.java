@@ -14,13 +14,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
@@ -75,6 +80,7 @@ public class R6GeneratorPlugin extends AbstractMojo {
 		Path manDir = rootDir.resolve("man");
 		Path docs = rootDir.resolve("docs");
 		getLog().debug("Wiping previous files.");
+		List<String> additionalExports = new ArrayList<>();
 		
 		try {
 			Files.createDirectories(jarDir);
@@ -93,6 +99,25 @@ public class R6GeneratorPlugin extends AbstractMojo {
 					}
 				})
 				.forEach(this::delete);
+			
+			// Find additional exports in non-generated R files 
+			Files.walk(rDir)
+				.filter(f -> !Files.isDirectory(f))
+				.forEach(f -> {
+					try {
+						String s = FileUtils.fileRead(f.toFile());
+						//System.out.println(s);
+						Pattern p = Pattern.compile("@export.*?\\n\\s*([a-zA-Z0-9_\\.]+)\\s*=", Pattern.DOTALL);
+						Matcher m = p.matcher(s);
+						while(m.find()) {
+							// System.out.println(m.group());
+							additionalExports.add(m.group(1));
+						}
+					} catch (IOException e) {
+						// do nothing
+					}
+				});
+			//TODO: additional Imports from doxygen tags? probably not really needed. Should be specified directly in @RClass
 			Files.walk(manDir).sorted(Comparator.reverseOrder()).filter(f -> !f.equals(manDir)).forEach(this::delete);
 			
 		} catch (IOException e1) {
@@ -164,7 +189,7 @@ public class R6GeneratorPlugin extends AbstractMojo {
 			//write the code to the desired location.
 			getLog().debug("Writing R6 library code.");
 			RModelWriter writer = new RModelWriter(
-					model.get(), 
+					model.get().withAdditionalExports(additionalExports), 
 					outputDirectory,
 					jarFile,
 					getLog()
