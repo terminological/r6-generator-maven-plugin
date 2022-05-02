@@ -53,6 +53,9 @@ public class PackageData {
 	@Parameter(required=false)
 	private String[] rjavaOpts;
 	
+	@Parameter(property="defaultLogLevel",defaultValue="INFO",required=true)
+	private String defaultLogLevel;
+	
 	@Parameter
 	private Boolean debug;
 	
@@ -87,13 +90,20 @@ public class PackageData {
 	public String getMaintainerORCID() {
 		return maintainerORCID;
 	}
-	
+
 	/** {@code <debugMode>true</debugMode>}
 	 * @return
 	 */
 	public boolean getDebugMode() {
 		return debug != null && debug.booleanValue(); 
 	}
+	
+	/** {@code <defaultLogLevel>WARN</defaultLogLevel>}
+	 * @return
+	 */
+	public String getDefaultLogLevel() {
+		return defaultLogLevel == null ? "INFO" : defaultLogLevel;
+	};
 	
 	/** {@code <usePkgdown>true</usePkgdown>}
 	 * 
@@ -213,6 +223,8 @@ public class PackageData {
 	}
 
 	
-	
+	public void setDefaultLogLevel(String defaultLogLevel) {
+		this.defaultLogLevel = defaultLogLevel;
+	}
 	
 }

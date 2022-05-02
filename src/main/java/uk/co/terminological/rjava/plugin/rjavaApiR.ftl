@@ -76,13 +76,13 @@ JavaApi = R6::R6Class("JavaApi", public=list(
  	#### constructor ----
  	#' @description
  	#' Create the R6 api library class. This is the entry point to all Java related classes and methods in this package.
-    #' @param logLevel A string such as "DEBUG", "INFO", "WARN" (defaults to "INFO")
+    #' @param logLevel A string such as "DEBUG", "INFO", "WARN" (defaults to "${model.getConfig().getDefaultLogLevel()}")
     #' @examples
     #' \dontrun{
     #' J = ${model.getConfig().getPackageName()}::JavaApi$get();
 	#' }
     #' @return nothing
- 	initialize = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"INFO"</#if>) {
+ 	initialize = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"${model.getConfig().getDefaultLogLevel()}"</#if>) {
  		if (!is.null(JavaApi$singleton)) stop("Startup the java api with JavaApi$get() rather than using this constructor directly")
  	
  		message("Initialising ${model.getConfig().getTitle()}")
@@ -191,7 +191,7 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 
 JavaApi$singleton = NULL
 
-JavaApi$get = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"INFO"</#if>) {
+JavaApi$get = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"${model.getConfig().getDefaultLogLevel()}"</#if>) {
 	if (is.null(JavaApi$singleton)) {
 		JavaApi$singleton = JavaApi$new(logLevel)
 	}
