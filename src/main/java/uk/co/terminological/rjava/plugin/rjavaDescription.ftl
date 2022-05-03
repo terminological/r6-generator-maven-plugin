@@ -10,8 +10,9 @@ Description: ${model.getConfig().getDescription()!}
 License: ${model.getConfig().getLicense()!}
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
 Suggests: 
-<#list model.getSuggests() as suggest>	${suggest},${"\n"}</#list>	tibble
+<#list model.getSuggests() as suggest>	${suggest},${"\n"}</#list>	knitr
 Imports:
 <#list model.getImports() as import>	${import},${"\n"}</#list>	rJava,
 	R6

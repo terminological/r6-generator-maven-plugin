@@ -60,11 +60,12 @@ public class RModelWriter {
 		doGenerate(new File(target,"NAMESPACE"),getTemplate("/rjavaNamespace.ftl"),typeRoot);
 		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/rjavaDescription.ftl"),typeRoot);
 		doGenerate(new File(instDir,"CITATION"),getTemplate("/rjavaCitation.ftl"),typeRoot);
-		doGenerate(new File(target,"LICENSE"),getTemplate("/rjavaLicense.ftl"),typeRoot);
+		if (model.getConfig().needsLicense()) doGenerate(new File(target,"LICENSE"),getTemplate("/rjavaLicense.ftl"),typeRoot);
 		doGenerate(new File(manDir,"JavaApi.Rd"),getTemplate("/rjavaApiRd.ftl"),typeRoot);
 		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/rjavaPackageRd.ftl"),typeRoot);
 		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/rjavaApiR.ftl"),typeRoot);
 		doGenerate(new File(rDir,"zzz.R"),getTemplate("/rjavaZzz.ftl"),typeRoot);
+		if (model.getConfig().usePkgdown()) doGenerate(new File(target,".Rbuildignore"),getTemplate("/rjavaRbuildignore.ftl"),typeRoot);
 		
 		for (RClass type: model.getClassTypes()) {
 			
