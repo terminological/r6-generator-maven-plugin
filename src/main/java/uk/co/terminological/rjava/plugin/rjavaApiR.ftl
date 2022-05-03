@@ -76,14 +76,14 @@ JavaApi = R6::R6Class("JavaApi", public=list(
  	#### constructor ----
  	#' @description
  	#' Create the R6 api library class. This is the entry point to all Java related classes and methods in this package.
-    #' @param logLevel A string such as "DEBUG", "INFO", "WARN" (defaults to "${model.getConfig().getDefaultLogLevel()}")
+    #' @param logLevel One of "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL". (defaults to "${model.getConfig().getDefaultLogLevel()}") 
     #' @examples
     #' \dontrun{
     #' J = ${model.getConfig().getPackageName()}::JavaApi$get();
 	#' }
     #' @return nothing
  	initialize = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"${model.getConfig().getDefaultLogLevel()}"</#if>) {
- 		if (!is.null(JavaApi$singleton)) stop("Startup the java api with JavaApi$get() rather than using this constructor directly")
+ 		if (is.null(JavaApi$singleton)) stop("Startup the java api with JavaApi$get() rather than using this constructor directly")
  	
  		message("Initialising ${model.getConfig().getTitle()}")
  		message("Version: ${model.getConfig().getVersion()}")
@@ -108,18 +108,20 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 	        message(paste0("Adding to classpath: ",jars,collapse='\n'))
 	        .jaddClassPath(jars)
 	    }
- 	
+	    
+	    # configure logging
  		.jcall("uk/co/terminological/rjava/LogController", returnSig = "V", method = "setupRConsole")
  		.jcall("uk/co/terminological/rjava/LogController", returnSig = "V", method = "configureLog" , logLevel)
  		# TODO: this is the library build date code byut it requires testing
- 		# buildDate = .jcall("uk/co/terminological/rjava/LogController", returnSig = "S", method = "getClassBuildTime")
+ 		buildDate = .jcall("uk/co/terminological/rjava/LogController", returnSig = "S", method = "getClassBuildTime")
     	self$.log = .jcall("org/slf4j/LoggerFactory", returnSig = "Lorg/slf4j/Logger;", method = "getLogger", "${model.getConfig().getPackageName()}");
     	.jcall(self$.log,returnSig = "V",method = "info","Initialised ${model.getConfig().getPackageName()}");
 		.jcall(self$.log,returnSig = "V",method = "debug","Version: ${model.getConfig().getVersion()}");
 		.jcall(self$.log,returnSig = "V",method = "debug","R package generated: ${model.getConfig().getDate()}");
-		# .jcall(self$.log,returnSig = "V",method = "debug",paste0("Java library compiled: ",buildDate));
+		.jcall(self$.log,returnSig = "V",method = "debug",paste0("Java library compiled: ",buildDate));
 		.jcall(self$.log,returnSig = "V",method = "debug","Contact: ${model.getConfig().getMaintainerEmail()}");
 		self$printMessages()
+		
 		# initialise type conversion functions
 		
 		self$.toJava = list(
@@ -193,6 +195,8 @@ JavaApi$singleton = NULL
 
 JavaApi$get = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<#else>"${model.getConfig().getDefaultLogLevel()}"</#if>) {
 	if (is.null(JavaApi$singleton)) {
+		# set to non-null so that R6 constructor will work
+		JavaApi$singleton = FALSE 
 		JavaApi$singleton = JavaApi$new(logLevel)
 	}
 	return(JavaApi$singleton)
