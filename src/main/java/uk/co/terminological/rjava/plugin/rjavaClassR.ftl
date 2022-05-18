@@ -72,13 +72,15 @@ ${method.doxygen(example)}
 		tmp_${param} = self$.api$.toJava$${method.getParameterType(param).getSimpleName()}(${param});
 		</#list>
 		# execute method call
-		tmp_out = .jcall(self$.jobj, returnSig = "${method.getReturnType().getJNIType()}", method="${method.getName()}" ${method.getParameterCsv("tmp_")}); 
+		tmp_out = .jcall(self$.jobj, returnSig = "${method.getReturnType().getJNIType()}", method="${method.getName()}" ${method.getParameterCsv("tmp_")}, check=FALSE);
+		self$.api$printMessages()
+		# check for exceptions and rethrow them
+		.jcheck()
 		<#if method.isFactory()>
 		# is this a fluent method?
 		# if(.jcall(self$.jobj, returnSig="Z", method="equals", .jcast(tmp_out))) {
 		if(self$.jobj$equals(tmp_out)) {
 			# return fluent method
-			self$.api$printMessages()
 			invisible(self)
 		} else {
 			# wrap return java object in R6 class  
@@ -86,13 +88,11 @@ ${method.doxygen(example)}
 				self$.api$.fromJava$${method.getReturnType().getSimpleName()}(tmp_out),
 				self$.api
 			);
-			self$.api$printMessages()
 			return(out);
 		}
 		<#else>
 		# convert java object back to R
 		out = self$.api$.fromJava$${method.getReturnType().getSimpleName()}(tmp_out);
-		self$.api$printMessages()
 		if(is.null(out)) return(invisible(out))
 		return(out);
 		</#if>
@@ -118,9 +118,12 @@ ${method.doxygen(example)}
 	finalize = function() {
 		<#if class.hasFinalizer()>
 		if(!is.null(self$.jobj)) {
-			try({
-				.jcall(self$.jobj, returnSig = "V", method="${class.getFinalizer()}")
-			})
+			.jcall(self$.jobj, returnSig = "V", method="${class.getFinalizer()}", check=FALSE)
+			e = .jgetEx(clear=TRUE)
+			if (!is.null(e)) {
+				self$.api$.log$error(e$getMessage())
+			}
+			self$.api$printMessages() 
 		}
 		</#if>
 		self$.jobj = .jnull("${class.getJNIName()}")

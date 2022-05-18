@@ -50,7 +50,8 @@ JavaApi = R6::R6Class("JavaApi", public=list(
     #' print java system messages to the R console and flush the message cache. This is generally called automatically,
     #' @return nothing
 	printMessages = function() {
-		cat(.jcall("uk/co/terminological/rjava/LogController", returnSig = "Ljava/lang/String;", method = "getSystemMessages"))
+		# check = FALSE here to stop exceptions being cleared from the stack.
+		cat(.jcall("uk/co/terminological/rjava/LogController", returnSig = "Ljava/lang/String;", method = "getSystemMessages", check=FALSE))
 		invisible(NULL)
 	},
 	
@@ -148,13 +149,14 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 				tmp_${param} = self$.toJava$${method.getParameterType(param).getSimpleName()}(${param});
 	</#list>
 				# invoke constructor method
-				tmp_out = .jnew("${class.getJNIName()}" ${method.getParameterCsv("tmp_")}); 
+				tmp_out = .jnew("${class.getJNIName()}" ${method.getParameterCsv("tmp_")}, check=FALSE);
+				self$printMessages()
+				.jcheck() 
 				# convert result back to R (should be a identity conversion)
 				tmp_r6 = ${class.getSimpleName()}$new(
 					self$.fromJava$${method.getReturnType().getSimpleName()}(tmp_out),
 					self
 				);
-				self$printMessages()
 				return(tmp_r6)
 			}<#if (class.hasStaticMethods())>,</#if>
 	<#list class.getStaticMethods() as method>
@@ -164,7 +166,9 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 				tmp_${param} = self$.toJava$${method.getParameterType(param).getSimpleName()}(${param});
 			</#list>
 				#execute static call
-				tmp_out = .jcall("${class.getJNIName()}", returnSig = "${method.getReturnType().getJNIType()}", method="${method.getName()}" ${method.getParameterCsv("tmp_")}); 
+				tmp_out = .jcall("${class.getJNIName()}", returnSig = "${method.getReturnType().getJNIType()}", method="${method.getName()}" ${method.getParameterCsv("tmp_")}, check=FALSE);
+				self$printMessages()
+				.jcheck() 
 			<#if method.isFactory()>
 				<#-- 
 				# get object if it already exists
@@ -175,12 +179,10 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 					self$.fromJava$${method.getReturnType().getSimpleName()}(tmp_out),
 					self
 				);
-				self$printMessages()
 				return(out)
 			<#else>
 				# convert java object back to R
 				out = self$.fromJava$${method.getReturnType().getSimpleName()}(tmp_out);
-				self$printMessages()
 				if(is.null(out)) return(invisible(out))
 				return(out)
 			</#if>
