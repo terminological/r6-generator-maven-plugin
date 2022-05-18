@@ -57,6 +57,7 @@ public class RMethod extends RAnnotated {
 			.filter(val -> val.trim().startsWith(paramName))
 			.collect(Collectors.joining());
 		String defaultValue = defaults.get(paramName);
+		defaultValue = defaultValue == null ? null : defaultValue.replaceAll("^\\s*\"|\"\\s*$", "").replaceAll("\\\\", "\\\\\\\\");
 		defaultValue = defaultValue == null ? "" : " - (defaulting to "+defaultValue+")";  
 		return tmp.isEmpty() ? paramName+defaultValue : tmp+defaultValue;
 	}

@@ -4,3 +4,7 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+# java maven directory layouts
+^src$
+^target$
+pom.xml
