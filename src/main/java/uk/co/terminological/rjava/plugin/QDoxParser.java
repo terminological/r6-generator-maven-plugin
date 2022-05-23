@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
@@ -28,6 +27,7 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
 import com.thoughtworks.qdox.model.impl.DefaultJavaType;
 
 import uk.co.terminological.rjava.RDataType;
+import uk.co.terminological.rjava.types.RObject;
 
 
 

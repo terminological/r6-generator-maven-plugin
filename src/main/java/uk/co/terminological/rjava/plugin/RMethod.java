@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.codehaus.plexus.util.StringUtils;
 
 public class RMethod extends RAnnotated {
 			

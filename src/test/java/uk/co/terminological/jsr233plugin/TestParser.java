@@ -1,9 +1,5 @@
 package uk.co.terminological.jsr233plugin;
 
-import static org.junit.Assert.*;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.commons.text.StringEscapeUtils;

@@ -27,7 +27,7 @@ public class RType {
 	// there is a high degree of interdependence between this and the runtime package annotations
 	
 	//TODO: this is not used and coudl be stripped out
-	private RModel model;
+	//private RModel model;
 	protected String simpleName;
 	protected String canonicalName;
 	private List<String> inputRCode;
@@ -38,7 +38,7 @@ public class RType {
 	
 	// QDox derived types. This might not be used anymore
 	public RType(RModel model, List<String> inputRCode, List<String> outputRCode, String JNIType, JavaType type, String simpleName) {
-		this.model = model;
+		//this.model = model;
 		this.simpleName = simpleName;
 		this.inputRCode = inputRCode;
 		this.outputRCode = outputRCode;
@@ -50,7 +50,7 @@ public class RType {
 	// Reflection based constructor which will use classes from the runtime class
 	// and manually defined ones 
 	public RType(RModel model, List<String> inputRCode, List<String> outputRCode, String JNIType, Class<?> type) {
-		this.model = model;
+		//this.model = model;
 		this.simpleName = type.getSimpleName();
 		this.inputRCode = inputRCode;
 		this.outputRCode = outputRCode;

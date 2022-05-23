@@ -25,7 +25,7 @@ jobs:
 </#if>
     continue-on-error: ${r"${{ matrix.config.fail }}"}
 
-    name: ${r"${{ matrix.config.os }} (${{ matrix.config.r }})"}
+    name: ${r"${{ matrix.config.os }} R:(${{ matrix.config.r }} Java:${{ matrix.java }})"}
 
     strategy:
       fail-fast: false
