@@ -2,6 +2,8 @@ package uk.co.terminological.jsr233plugin;
 
 import static org.junit.Assert.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -32,4 +34,11 @@ public class TestParser {
 	}
 	
 
+//	@Test
+//	public final void testPaths() {
+//		Path path1 = Paths.get("/home/terminological/tmp");
+//		Path path2 = Paths.get("/home/terminological/tmp");
+//		System.out.println(path1.relativize(path2).toString());
+//		System.out.println(path1.relativize(path2).toString().equals(""));
+//	}
 }

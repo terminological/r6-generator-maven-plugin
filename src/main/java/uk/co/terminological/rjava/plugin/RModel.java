@@ -1,5 +1,7 @@
 package uk.co.terminological.rjava.plugin;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaType;
@@ -21,6 +24,8 @@ public class RModel {
 	private PackageData config;
 	private QDoxParser parser;
 	private Collection<String> additionalExports;
+	private Path rootPath;
+	private Path relativePath;
 
 	public Optional<JavaClass> javaClassFor(Class<?> clazz) {
 		return parser.javaClassFor(clazz);
@@ -93,7 +98,19 @@ public class RModel {
 		this.datatypes.put(out.getCanonicalName(), out);
 	}
 
-	
+	public void setRelativePath(MavenProject mavenProject, Path rootDir) {
+		rootPath = Paths.get(mavenProject.getBasedir().getPath());
+		relativePath = rootPath.relativize(rootDir);
+	}
+
+	public String getRelativePath() {
+		if (relativePath.toString().equals("")) return null;
+		return relativePath.toString();
+	}
+
+	public String getRootPath() {
+		return rootPath.toString();
+	}
 
 	
 

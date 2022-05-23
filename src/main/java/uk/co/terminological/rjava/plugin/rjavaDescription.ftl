@@ -12,7 +12,9 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 Suggests: 
-<#list model.getSuggests() as suggest>	${suggest},${"\n"}</#list>	knitr
+<#list model.getSuggests() as suggest>	${suggest},${"\n"}</#list>	knitr,
+	rmarkdown,
+	testthat
 Imports:
 <#list model.getImports() as import>	${import},${"\n"}</#list>	rJava,
 	R6

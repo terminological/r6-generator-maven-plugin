@@ -53,6 +53,9 @@ public class RModelWriter {
 		File manDir = new File(target,"man");
 		manDir.mkdirs();
 		
+		File workflowDir = new File(model.getRootPath(),".github/workflows");
+		manDir.mkdirs();
+		
 		Map<String,Object> typeRoot = new HashMap<>();
 		typeRoot.put("model", model);
 		typeRoot.put("jarFileName", jarFileName);
@@ -66,6 +69,7 @@ public class RModelWriter {
 		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/rjavaApiR.ftl"),typeRoot);
 		doGenerate(new File(rDir,"zzz.R"),getTemplate("/rjavaZzz.ftl"),typeRoot);
 		if (model.getConfig().usePkgdown()) doGenerate(new File(target,".Rbuildignore"),getTemplate("/rjavaRbuildignore.ftl"),typeRoot);
+		doGenerate(new File(workflowDir,"R-CMD-check.yaml"),getTemplate("/rjavaGithubWorkflow.ftl"),typeRoot);
 		
 		for (RClass type: model.getClassTypes()) {
 			

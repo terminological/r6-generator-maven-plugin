@@ -90,6 +90,19 @@ JavaApi = R6::R6Class("JavaApi", public=list(
  		message("Version: ${model.getConfig().getVersion()}")
 		message("Generated: ${model.getConfig().getDate()}")
  	
+ 		<#--
+ 		# TODO: if (substr(packageVersion("rJava"),1,1)=="0") { 
+ 		# 	use .jinit? at least for debugging mode.
+ 		#	you don't appear to be able to add parameters to .jpackage but .jinit will pick up the defaults
+ 		# } else { 
+ 		# 	use .jpackage with a custom class loader .jpackage(..., parameters=getOption("java.parameters"), own.loader=TRUE) 
+ 		#   and then everytime we use .jnew we need to pass .jnew(..., class.loader=.rJava.class.loader) I think.
+ 		#   currently the class.loader option exists in rJava < 1.0.0 but the value is NULL
+ 		#   this change will have to also be made in the API Rd file on a case specific basis.
+ 		#	the class loader probably ought to be a field in the API R6 class. plus maybe a wrapper for the .jnew method there 
+ 		# }
+ 		-->
+ 	
 	 	<#if model.getConfig().getDebugMode()>
 		# pass in debug options
 		if (!.jniInitialized) {
@@ -203,4 +216,18 @@ JavaApi$get = function(logLevel = <#if model.getConfig().getDebugMode()>"DEBUG"<
 	}
 	return(JavaApi$singleton)
 }
+
+
+<#-- 
+# CRAN checks require that the Imports in the description file appear in the namespace file. The 
+# r6-maven-plugin does make sure of this but if you then use pkgdown to generate the namespace file it takes 
+# them out again unless they are referenced somewhere:
+
+<#list model.getImports() as import>
+#' @import ${import}
+</#list>
+NULL
+
+# https://groups.google.com/g/rdevtools/c/qT6cJt6DLJ0
+ -->
 
