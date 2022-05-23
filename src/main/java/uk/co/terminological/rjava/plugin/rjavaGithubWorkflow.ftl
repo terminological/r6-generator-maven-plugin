@@ -72,6 +72,9 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+<#if model.getRelativePath()?has_content>
+	      working-directory: ${model.getRelativePath()}
+</#if>
       
       - name: Setup R Java support
         if: runner.os != 'Windows'
@@ -80,3 +83,6 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+<#if model.getRelativePath()?has_content>
+	      working-directory: ${model.getRelativePath()}
+</#if>
