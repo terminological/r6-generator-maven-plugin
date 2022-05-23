@@ -73,7 +73,7 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 <#if model.getRelativePath()?has_content>
-	      working-directory: ${model.getRelativePath()}
+          working-directory: ${model.getRelativePath()}
 </#if>
       
       - name: Setup R Java support
@@ -84,5 +84,5 @@ jobs:
         with:
           upload-snapshots: true
 <#if model.getRelativePath()?has_content>
-	      working-directory: ${model.getRelativePath()}
+          working-directory: ${model.getRelativePath()}
 </#if>
