@@ -59,11 +59,6 @@ jobs:
         with:
           java-version: ${r"${{ matrix.java }}"}
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
-      
       - name: Info
         run: "bash -c 'java -version && which java && echo $PATH && echo $JAVA_HOME'"
 
@@ -73,6 +68,11 @@ jobs:
           http-user-agent: ${r"${{ matrix.config.http-user-agent }}"}
           use-public-rspm: true
 
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+      
       - name: Setup R Java support
         if: runner.os != 'Windows'
         run: "echo export PATH=$PATH > reconf.sh; echo export JAVA_HOME=$JAVA_HOME >> reconf.sh; echo R CMD javareconf >> reconf.sh; sudo bash reconf.sh"
