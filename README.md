@@ -1,5 +1,7 @@
 # maven-r6-generator-plugin
 
+[![DOI](https://zenodo.org/badge/304662337.svg)](https://zenodo.org/badge/latestdoi/304662337)
+
 Maven plugin and annotation processor to write glue code to allow correctly annotated java class to be used within R as an set of R6 classes.
 
 ## Rationale
