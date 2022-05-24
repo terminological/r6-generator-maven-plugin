@@ -13,8 +13,8 @@ c(
 	bibentry(bibtype = "Manual",
 		title = "R6 generator maven plugin",
 		author = person(given="Rob", family="Challen",role="aut",email="rc538@exeter.ac.uk",comment = structure("0000-0002-5504-7768", .Names = "ORCID")),
-		note = "Maven plugin",
-		year = 2020,
+		note = "Maven plugin: ${model.getPluginVersion()}",
+		year = 2022,
 		url = "https://github.com/terminological/r6-generator-maven-plugin"
 	)
 )
