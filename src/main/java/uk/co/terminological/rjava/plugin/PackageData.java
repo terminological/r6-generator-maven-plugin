@@ -67,6 +67,12 @@ public class PackageData {
 	
 	@Parameter
 	private Boolean useJavadoc;
+
+	@Parameter
+	private String doi;
+
+	@Parameter
+	private String url;
 	
 	@Parameter(defaultValue="${java.home}/bin/javadoc")
 	private String javadocExecutable;
@@ -222,9 +228,24 @@ public class PackageData {
 		this.version = version;
 	}
 
-	
 	public void setDefaultLogLevel(String defaultLogLevel) {
 		this.defaultLogLevel = defaultLogLevel;
+	}
+	
+	public String getDoi() {
+		return doi;
+	}
+
+	public void setDoi(String doi) {
+		this.doi = doi;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
 }

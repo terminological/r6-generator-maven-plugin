@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
@@ -26,6 +27,8 @@ public class RModel {
 	private Collection<String> additionalExports;
 	private Path rootPath;
 	private Path relativePath;
+	private MavenProject mavenProject;
+	private Artifact pluginVersion;
 
 	public Optional<JavaClass> javaClassFor(Class<?> clazz) {
 		return parser.javaClassFor(clazz);
@@ -112,6 +115,28 @@ public class RModel {
 		return rootPath.toString();
 	}
 
+	public void setMavenMetadata(MavenProject mavenProject) {
+		this.mavenProject = mavenProject;
+	}
+
+	public String getPluginVersion() {
+		return
+				this.pluginVersion.getGroupId()+":"+
+				this.pluginVersion.getArtifactId()+":"+
+				this.pluginVersion.getVersion();
+	}
+
+	public String getMavenVersion() {
+		return
+				this.mavenProject.getGroupId()+":"+
+				this.mavenProject.getArtifactId()+":"+
+				this.mavenProject.getVersion();
+	}
+	
+	public void setPluginMetadata(Artifact pluginVersion) {
+		this.pluginVersion = pluginVersion;
+		
+	}
 	
 
 }
