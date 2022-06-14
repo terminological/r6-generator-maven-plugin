@@ -5,11 +5,18 @@
 ^docs$
 ^pkgdown$
 # java maven directory layouts
-^src$
+
 ^target$
-pom.xml
+
+# The following ignores can be used if we are deploying the fat jar to CRAN or github 
+# ^src$
+# pom.xml
+# mvnw
+# mvnw.cmd
+
 .classpath
 index.html
 ^.github$
-# created in rJava setup on github workflow.
+
+# created during rJava setup on github workflow.
 ^reconf.sh$

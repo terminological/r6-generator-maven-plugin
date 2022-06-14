@@ -17,4 +17,5 @@ Suggests:
 	testthat
 Imports:
 <#list model.getImports() as import>	${import},${"\n"}</#list>	rJava,
-	R6
+	R6,
+	fs

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +25,14 @@ public class RModelWriter {
 	private RModel model;
 	private File target;
 	private String jarFileName;
+	private String rToPomPath;
 	private Log log;
 
-	public RModelWriter(RModel model, File target, String jarFileName, Log log) {
+	public RModelWriter(RModel model, File target, String jarFileName, String rToPomPath, Log log) {
 		this.model = model;
 		this.target = target;
 		this.jarFileName = jarFileName;
+		this.rToPomPath = rToPomPath;
 		this.log=log;
 	}
 
@@ -60,6 +63,7 @@ public class RModelWriter {
 		Map<String,Object> typeRoot = new HashMap<>();
 		typeRoot.put("model", model);
 		typeRoot.put("jarFileName", jarFileName);
+		typeRoot.put("rToPomPath", rToPomPath);
 	
 		doGenerate(new File(target,"NAMESPACE"),getTemplate("/rjavaNamespace.ftl"),typeRoot);
 		doGenerate(new File(target,"DESCRIPTION"),getTemplate("/rjavaDescription.ftl"),typeRoot);
@@ -69,6 +73,7 @@ public class RModelWriter {
 		doGenerate(new File(manDir,model.getConfig().getPackageName()+"-package.Rd"),getTemplate("/rjavaPackageRd.ftl"),typeRoot);
 		doGenerate(new File(rDir,"JavaApi.R"),getTemplate("/rjavaApiR.ftl"),typeRoot);
 		doGenerate(new File(rDir,"zzz.R"),getTemplate("/rjavaZzz.ftl"),typeRoot);
+		doGenerateSafe(new File(target,"cran-comments.md"),getTemplate("/rjavaCranComments.ftl"),typeRoot);
 		if (model.getConfig().usePkgdown()) doGenerate(new File(target,".Rbuildignore"),getTemplate("/rjavaRbuildignore.ftl"),typeRoot);
 		doGenerateSafe(new File(workflowDir,"R-CMD-check.yaml"),getTemplate("/rjavaGithubWorkflow.ftl"),typeRoot);
 		

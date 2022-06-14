@@ -25,6 +25,7 @@ JavaApi = R6::R6Class("JavaApi", public=list(
 	#' @field .reg the list of references to java objects created by this API 
 	.reg = list(),
 <#list model.getClassTypes() as class>
+	#' @field ${class.getSimpleName()} the ${class.getSimpleName()} class contructors and static methods
 	${class.getSimpleName()} = NULL,
 </#list>
 
